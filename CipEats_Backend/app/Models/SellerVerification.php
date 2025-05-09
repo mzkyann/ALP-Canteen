@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\SellerVerification;
 
 class SellerVerification extends Model
 {
     protected $fillable = [
-        'user_id', 'business_name', 'status'
+        'user_id', 'business_name', 'status','rejection_reason',
     ];
     
     public function user()

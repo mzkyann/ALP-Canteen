@@ -119,4 +119,16 @@ class SellerVerificationController extends Controller
             ]
         ]);
     }
+    public function pending()
+{
+    $pendingSellers = SellerVerification::with('user')
+        ->where('status', 'pending')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $pendingSellers
+    ]);
+}
+
 }

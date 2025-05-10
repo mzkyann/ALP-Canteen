@@ -119,16 +119,28 @@ class SellerVerificationController extends Controller
             ]
         ]);
     }
-    public function pending()
+
+public function pending()
 {
+    \Log::debug('Test log: Checking if log works');
+
+    // Debugging step 1: Log a message before querying
+    \Log::info('Fetching pending sellers...');
+
+    // Fetching pending seller verifications
     $pendingSellers = SellerVerification::with('user')
         ->where('status', 'pending')
         ->get();
+    
+    // Debugging step 2: Log the result of the query
+    \Log::info('Pending Sellers:', $pendingSellers->toArray());
 
     return response()->json([
         'success' => true,
         'data' => $pendingSellers
     ]);
 }
+
+
 
 }

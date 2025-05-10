@@ -63,6 +63,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(SellerVerification::class);
     }
 
+        public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    // public function foods()
+    // {
+    //     return $this->hasMany(Food::class);
+    // }
+
     public function isVerifiedSeller()
     {
         return $this->role === self::ROLE_SELLER && $this->is_verified;

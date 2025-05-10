@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FoodController;
 use App\Http\Controllers\SellerVerificationController;
 
 Route::prefix('v1')->group(function () {
@@ -19,6 +20,11 @@ Route::prefix('v1')->group(function () {
         Route::prefix('seller')->group(function () {
             Route::post('/verify', [SellerVerificationController::class, 'store']);
             Route::get('/verification-status', [SellerVerificationController::class, 'status']);
+            Route::apiResource('foods', FoodController::class);
+            Route::put('/foods/{food}', [FoodController::class, 'update']);
+            Route::patch('/foods/{food}/availability', [FoodController::class, 'setAvailability']);
+            Route::delete('/foods/{food}', [FoodController::class, 'destroy']);
+
         });
         
         // Admin endpoints

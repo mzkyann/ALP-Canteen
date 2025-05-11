@@ -17,46 +17,67 @@ class CartController extends Controller
         return response()->json(['data' => $cartItems]);
     }
 
-    public function add(Request $request)
-    {
-        $request->validate([
-            'food_id' => 'required|exists:food,id',
-            'quantity' => 'nullable|integer|min:1'
+public function add(Request $request)
+{
+    $request->validate([
+        'food_id' => 'required|exists:food,id',
+        'quantity' => 'nullable|integer|min:1|max:20'
+    ]);
+
+    $foodId = $request->food_id;
+    $quantity = $request->input('quantity', 1);
+
+    $cartItem = CartItem::where('user_id', Auth::id())
+        ->where('food_id', $foodId)
+        ->first();
+
+    if ($cartItem) {
+        $newQuantity = $cartItem->quantity + $quantity;
+        $cartItem->quantity = min($newQuantity, 20);
+        $cartItem->save();
+    } else {
+        $cartItem = CartItem::create([
+            'user_id' => Auth::id(),
+            'food_id' => $foodId,
+            'quantity' => $quantity
         ]);
-
-        $foodId = $request->food_id;
-        $quantity = $request->input('quantity', 1);
-
-        $cartItem = CartItem::where('user_id', Auth::id())
-            ->where('food_id', $foodId)
-            ->first();
-
-        if ($cartItem) {
-            $cartItem->quantity += $quantity;
-            $cartItem->save();
-        } else {
-            $cartItem = CartItem::create([
-                'user_id' => Auth::id(),
-                'food_id' => $foodId,
-                'quantity' => $quantity
-            ]);
-        }
-
-        return response()->json(['message' => 'Item added to cart', 'item' => $cartItem]);
     }
 
-    public function update(Request $request, $id)
-    {
+    return response()->json(['message' => 'Item added to cart', 'item' => $cartItem]);
+}
+
+
+public function update(Request $request, $id)
+{
+    try {
         $request->validate([
-            'quantity' => 'required|integer|min:1'
+            'food_id' => 'nullable|exists:food,id',
+            'quantity' => 'nullable|integer|min:1|max:20'
         ]);
 
         $cartItem = CartItem::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-        $cartItem->quantity = $request->quantity;
+
+        if ($request->has('food_id')) {
+            $cartItem->food_id = $request->input('food_id');
+        }
+
+        if ($request->has('quantity')) {
+            $cartItem->quantity = $request->input('quantity');
+        }
+
         $cartItem->save();
 
-        return response()->json(['message' => 'Cart updated', 'item' => $cartItem]);
+        return response()->json(['message' => 'Cart item updated successfully']);
+    } catch (ModelNotFoundException $e) {
+        return response()->json(['error' => 'Cart item not found'], 404);
+    } catch (ValidationException $e) {
+        return response()->json(['error' => 'Invalid data', 'details' => $e->errors()], 422);
+    } catch (QueryException $e) {
+        return response()->json(['error' => 'Database error', 'message' => $e->getMessage()], 500);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Something went wrong', 'message' => $e->getMessage()], 500);
     }
+}
 
     public function remove($id)
     {

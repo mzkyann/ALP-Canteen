@@ -1,36 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../view_model/menu_view_model.dart';
 import '../model/menu_item.dart';
-
-// Dummy data
-final menuProvider = Provider<List<MenuItem>>((ref) {
-  return [
-    MenuItem(
-        name: "Nasi Goreng",
-        imageUrl: "https://i.imgur.com/tXqp4IW.png",
-        price: 12000,
-        vendor: "Chick on Cup",
-        available: true),
-    MenuItem(
-        name: "Mie Kanton",
-        imageUrl: "https://i.imgur.com/CxAGZrP.png",
-        price: 15000,
-        vendor: "Warung AW",
-        available: true),
-    MenuItem(  
-        name: "Ayam Geprek",
-        imageUrl: "https://i.imgur.com/x0QFjqI.png",
-        price: 15000,
-        vendor: "Chick on Cup",
-        available: true),
-    MenuItem(
-        name: "Kentang Goreng Gosong",
-        imageUrl: "https://i.imgur.com/K8MlyQw.png",
-        price: 15000,
-        vendor: "Warung AW",
-        available: true),
-  ];
-});
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -39,10 +10,28 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final menuList = ref.watch(menuProvider);
 
+    Widget getImage(String imageUrl) {
+      if (imageUrl.startsWith('assets/')) {
+        return Image.asset(
+          imageUrl,
+          height: 100,
+          width: double.infinity,
+          fit: BoxFit.cover,
+        );
+      } else {
+        return Image.network(
+          imageUrl,
+          height: 100,
+          width: double.infinity,
+          fit: BoxFit.cover,
+        );
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        toolbarHeight: 80,
+        toolbarHeight: 70,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -52,110 +41,127 @@ class HomePage extends ConsumerWidget {
             ),
           ),
         ),
-        title: const Text("Kantin UC", style: TextStyle(color: Colors.white)),
-        centerTitle: false,
+        title: const Text(
+          'Kantin UC',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildVendorIcon("https://i.imgur.com/igP1rPz.png", "Chick on Cup"),
-                _buildVendorIcon("https://i.imgur.com/KVbNn2O.png", "Warung AW"),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              "Rekomendasi Harian",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const Divider(),
-            Expanded(
-              child: GridView.builder(
-                itemCount: menuList.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, childAspectRatio: 0.8, crossAxisSpacing: 10, mainAxisSpacing: 10),
-                itemBuilder: (context, index) {
-                  final item = menuList[index];
-                  return _buildMenuCard(item);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Beranda"),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_bag), label: "Pesanan"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Akun"),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVendorIcon(String imageUrl, String title) {
-    return Column(
-      children: [
-        Image.network(imageUrl, height: 60),
-        const SizedBox(height: 8),
-        Text(title),
-      ],
-    );
-  }
-
-  Widget _buildMenuCard(MenuItem item) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade400),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
+      body: ListView(
         children: [
-          Stack(
+          const SizedBox(height: 16),
+          // Vendor logo
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-                  child: Image.network(item.imageUrl, height: 100, width: double.infinity, fit: BoxFit.cover)),
-              Positioned(
-                top: 6,
-                left: 6,
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  radius: 12,
-                  child: Image.network(
-                    item.vendor == "Chick on Cup"
-                        ? "https://i.imgur.com/igP1rPz.png"
-                        : "https://i.imgur.com/KVbNn2O.png",
-                    height: 16,
-                  ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/vendor1');
+                },
+                child: Column(
+                  children: [
+                    Image.asset('assets/images/ChickonCup.png', width: 120),
+                    const SizedBox(height: 4),
+                    const Text("Chick on Cup"),
+                  ],
                 ),
               ),
-              if (item.available)
-                const Positioned(
-                  bottom: 6,
-                  right: 6,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.green,
-                    radius: 6,
-                  ),
-                ),
+              Column(
+                children: [
+                  Image.asset('assets/images/WarungAw.png', width: 120),
+                  const SizedBox(height: 4),
+                  const Text("Warung AW"),
+                ],
+              ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text("Rp ${item.price}", style: const TextStyle(color: Colors.grey)),
-              ],
+
+          const SizedBox(height: 16),
+
+
+          const SizedBox(height: 20),
+
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Rekomendasi Harian',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          )
+          ),
+          const SizedBox(height: 8),
+
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: menuList.length,
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 200,
+              mainAxisExtent: 220,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemBuilder: (context, index) {
+              final item = menuList[index];
+              return Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8)),
+                          child: getImage(item.imageUrl),
+                        ),
+                        Positioned(
+                          top: 4,
+                          left: 4,
+                          child: CircleAvatar(
+                            backgroundImage: AssetImage(item.vendor == "Chick on Cup"
+                                ? 'assets/images/ChickonCup.png'
+                                : 'assets/images/WarungAw.png'),
+                            radius: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(item.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Rp ${item.price}",
+                              style: TextStyle(color: Colors.grey[700])),
+                          if (item.available)
+                            const Icon(Icons.circle, color: Colors.green, size: 12),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Beranda"),
+          BottomNavigationBarItem(icon: Icon(Icons.receipt), label: "Pesanan"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Akun"),
         ],
       ),
     );

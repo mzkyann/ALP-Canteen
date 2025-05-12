@@ -31,4 +31,13 @@ flutter:
 
   assets:
     # Add assets from the images directory to the application.
-    - assets/images/
+    - assets/images/Ayam_Geprek.png
+    - assets/images/Bakara_Goreng.png
+    - assets/images/ChickonCup.png
+    - assets/images/Kentang_Goreng.png
+    - assets/images/Mie_Kanton.png
+    - assets/images/Nasi_Gila.png
+    - assets/images/Nasi_Goreng.png
+    - assets/images/Pisang_Goreng.png
+    - assets/images/Prasmanan.png
+    - assets/images/WarungAw.png

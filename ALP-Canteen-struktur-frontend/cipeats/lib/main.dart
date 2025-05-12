@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'view/home_page.dart';
+import 'view/vendor1.dart'; // Pastikan file ini ada
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -17,7 +18,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomePage(),       
+        '/vendor1': (context) => const Vendor1Page(), 
+      },
     );
   }
 }

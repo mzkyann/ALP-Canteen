@@ -27,15 +27,15 @@ class Vendor1Page extends ConsumerWidget {
                 const Divider(thickness: 2),
                 const SizedBox(height: 10),
 
-                // Grid Menu
+                // Grid Menu yang responsif
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: GridView.builder(
                       itemCount: menuItems.length,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisExtent: 180,
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 200, // Maksimal lebar card
+                        mainAxisExtent: 180, // Ukuran tinggi card
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),
@@ -107,20 +107,6 @@ class Vendor1Page extends ConsumerWidget {
                     ),
                   ),
                 ),
-
-                // Bottom Navigation
-                Container(
-                  color: Colors.black87,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: const [
-                      IconWithLabel(icon: Icons.home, label: 'Beranda'),
-                      IconWithLabel(icon: Icons.receipt_long, label: 'Pesanan'),
-                      IconWithLabel(icon: Icons.person, label: 'Akun'),
-                    ],
-                  ),
-                )
               ],
             ),
 
@@ -142,25 +128,21 @@ class Vendor1Page extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-}
 
-class IconWithLabel extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const IconWithLabel({super.key, required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: Colors.white),
-        Text(label,
-            style: const TextStyle(color: Colors.white, fontSize: 12)),
-      ],
+      // Bottom Navigation (Responsif seperti di Home)
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0, // Atur index yang aktif sesuai kebutuhan
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Beranda"),
+          BottomNavigationBarItem(icon: Icon(Icons.receipt), label: "Pesanan"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Akun"),
+        ],
+        selectedItemColor: Colors.grey,
+        unselectedItemColor: Colors.grey[400],
+        backgroundColor: Colors.white,
+        showUnselectedLabels: true, // Menampilkan label saat tidak terpilih
+        showSelectedLabels: true, // Menampilkan label saat terpilih
+      ),
     );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'view/home_page.dart';
-import 'view/vendor1.dart'; // Pastikan file ini ada
+import 'view/vendor1.dart'; 
+import 'view/vendor2.dart'; 
+import 'view/menu_detail_page.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -22,6 +24,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const HomePage(),       
         '/vendor1': (context) => const Vendor1Page(), 
+        '/vendor2': (context) => const Vendor2Page(), 
+        '/detail': (context) => const MenuDetailPage(), 
       },
     );
   }

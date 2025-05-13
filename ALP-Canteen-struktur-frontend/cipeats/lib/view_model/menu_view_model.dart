@@ -9,6 +9,8 @@ final menuProvider = Provider<List<MenuItem>>((ref) {
       price: 12000,
       vendor: "Chick on Cup",
       available: true,
+      description:
+          "Nasi goreng dengan bumbu khas, bisa ditambah topping seperti ayam, telur, sosis, dan kerupuk.",
     ),
     MenuItem(
       name: "Mie Kanton",
@@ -16,6 +18,8 @@ final menuProvider = Provider<List<MenuItem>>((ref) {
       price: 15000,
       vendor: "Warung AW",
       available: true,
+      description:
+          "Mie khas Kanton dengan saus spesial, sayuran segar, dan pilihan topping ayam atau sapi.",
     ),
     MenuItem(
       name: "Ayam Geprek",
@@ -23,6 +27,8 @@ final menuProvider = Provider<List<MenuItem>>((ref) {
       price: 15000,
       vendor: "Chick on Cup",
       available: true,
+      description:
+          "Ayam goreng tepung digeprek dengan sambal pedas, cocok untuk pecinta rasa nendang.",
     ),
     MenuItem(
       name: "Kentang Goreng",
@@ -30,6 +36,8 @@ final menuProvider = Provider<List<MenuItem>>((ref) {
       price: 15000,
       vendor: "Warung AW",
       available: true,
+      description:
+          "Kentang goreng renyah dengan bumbu asin gurih, cocok untuk camilan atau teman makan.",
     ),
   ];
 });

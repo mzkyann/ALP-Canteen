@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Auth\Events\Registered; // ✅ Import Registered event
 
 class AuthController extends Controller
 {
@@ -20,9 +20,9 @@ class AuthController extends Controller
         // Validate input
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|unique:users,email',
-            'password' => 'required|string|min:6|',
-            'role' => 'sometimes|string|in:customer,seller', // Optional role field
+            'email' => 'required|string|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'role' => 'sometimes|string|in:customer,seller',
         ]);
 
         if ($validator->fails()) {
@@ -33,15 +33,17 @@ class AuthController extends Controller
         }
 
         try {
-            // Create user with validated data
+            // Create user
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'role' => $request->role ?? 'customer', // Default to 'customer' if not provided
+                'role' => $request->role ?? 'customer',
             ]);
 
-            // Generate API token
+            event(new Registered($user)); // ✅ Send email verification link
+
+            // Generate token
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
@@ -69,7 +71,6 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Validate input
         $validator = Validator::make($request->all(), [
             'email' => 'required|string',
             'password' => 'required|string',
@@ -83,13 +84,24 @@ class AuthController extends Controller
         }
 
         try {
-            // Attempt to authenticate
             if (!Auth::attempt($request->only('email', 'password'))) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid credentials'
                 ], 401);
             }
+
+            $user = Auth::user();
+
+            // Check email verification status
+            if (!$user->hasVerifiedEmail()) {
+                Auth::logout(); // Log them out immediately
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email not verified. Please verify your email first.'
+                ], 403);
+            }
+
 
             $user = Auth::user();
             $token = $user->createToken('auth_token')->plainTextToken;

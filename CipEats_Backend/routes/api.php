@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SellerVerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
@@ -58,6 +59,12 @@ Route::prefix('v1')->group(function () {
         Route::delete('/cart/{id}', [CartController::class, 'remove']);
         Route::delete('/cart', [CartController::class, 'clear']);
 
+        Route::post('/orders/place', [OrderController::class, 'placeOrder']);
+        Route::post('/orders', [OrderController::class, 'placeOrder']); // Customer places order
+        Route::get('/orders/seller', [OrderController::class, 'sellerOrders']); // Seller views their orders
+        Route::get('/orders/customer', [OrderController::class, 'customerOrders']); // Customer views own orders
+        Route::patch('/order-items/{id}/status', [OrderController::class, 'updateOrderItemStatus']); // Seller updates status
+
         Route::prefix('seller')->group(function () {
             Route::post('/verify', [SellerVerificationController::class, 'store']);
             Route::get('/verification-status', [SellerVerificationController::class, 'status']);
@@ -65,6 +72,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/foods/{food}', [FoodController::class, 'update']);
             Route::patch('/foods/{food}/availability', [FoodController::class, 'setAvailability']);
             Route::delete('/foods/{food}', [FoodController::class, 'destroy']);
+            
         });
 
         Route::middleware('admin')->group(function () {

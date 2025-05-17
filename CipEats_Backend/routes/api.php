@@ -63,6 +63,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/orders/seller', [OrderController::class, 'sellerOrders']); // Seller views their orders
         Route::get('/orders/customer', [OrderController::class, 'customerOrders']); // Customer views own orders
         Route::patch('/order-items/{id}/status', [OrderController::class, 'updateOrderItemStatus']); // Seller updates status
+        Route::get('/orders/status', [OrderController::class, 'getOrdersByStatus']);
 
         Route::prefix('seller')->group(function () {
             Route::post('/verify', [SellerVerificationController::class, 'store']);

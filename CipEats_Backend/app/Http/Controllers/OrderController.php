@@ -82,21 +82,34 @@ public function placeOrder(Request $request)
 public function sellerOrders()
 {
     $user = Auth::user();
+
     if ($user->role !== 'seller') {
         return response()->json(['error' => 'Only sellers can view this.'], 403);
     }
 
-    // Get orders that have items with foods owned by the current seller
     $orders = Order::whereHas('orderItems.food', function ($query) use ($user) {
-        $query->where('user_id', $user->id); // food.user_id is the seller
+        $query->where('user_id', $user->id);
     })->with([
         'orderItems' => function ($query) use ($user) {
             $query->whereHas('food', function ($foodQuery) use ($user) {
-                $foodQuery->where('user_id', $user->id); // again, filter by food's seller
+                $foodQuery->where('user_id', $user->id);
             })->with('food');
         },
-        'user' // the buyer
+        'user'
     ])->get();
+
+    // Adjust total_price to be seller-specific
+    $orders->transform(function ($order) {
+        // Calculate total only from visible (seller-owned) order items
+        $sellerTotal = $order->orderItems->sum(function ($item) {
+            return $item->price * $item->quantity;
+        });
+
+        // Override total_price field with the correct seller-specific amount
+        $order->total_price = number_format($sellerTotal, 2, '.', '');
+
+        return $order;
+    });
 
     return response()->json($orders);
 }
@@ -173,6 +186,41 @@ public function updateStatusBasedOnItems()
 
     $this->save();
 }
+
+    public function getOrdersByStatus()
+    {
+        $user = Auth::user();
+
+        if ($user->role !== 'seller') {
+            return response()->json(['error' => 'Only sellers can view these orders.'], 403);
+        }
+
+        $orders = Order::where('status', 'pending') // Only pending orders
+            ->whereHas('orderItems.food', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with([
+                'orderItems' => function ($query) use ($user) {
+                    $query->whereHas('food', function ($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    })->with('food');
+                },
+                'user'
+            ])
+            ->get();
+
+        $orders->transform(function ($order) {
+            $sellerTotal = $order->orderItems->sum(function ($item) {
+                return $item->quantity * $item->price;
+            });
+
+            $order->total_price = number_format($sellerTotal, 2, '.', '');
+
+            return $order;
+        });
+
+        return response()->json($orders);
+    }
 
 
 }

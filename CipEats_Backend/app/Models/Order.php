@@ -21,8 +21,25 @@ class Order extends Model
     }
 
     // Order items for this order
-    public function orderItems(): HasMany
+    public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function updateStatusBasedOnItems()
+    {
+        $statuses = $this->orderItems()->pluck('status')->unique();
+
+        if ($statuses->contains('pending')) {
+            $this->status = 'pending';
+        } elseif ($statuses->count() === 1 && $statuses->first() === 'siap') {
+            $this->status = 'siap';
+        } elseif ($statuses->count() === 1 && $statuses->first() === 'diantar') {
+            $this->status = 'diantar';
+        } else {
+            $this->status = 'in_progress';
+        }
+
+        $this->save();
     }
 }

@@ -59,7 +59,6 @@ Route::prefix('v1')->group(function () {
         Route::delete('/cart/{id}', [CartController::class, 'remove']);
         Route::delete('/cart', [CartController::class, 'clear']);
 
-        Route::post('/orders/place', [OrderController::class, 'placeOrder']);
         Route::post('/orders', [OrderController::class, 'placeOrder']); // Customer places order
         Route::get('/orders/seller', [OrderController::class, 'sellerOrders']); // Seller views their orders
         Route::get('/orders/customer', [OrderController::class, 'customerOrders']); // Customer views own orders

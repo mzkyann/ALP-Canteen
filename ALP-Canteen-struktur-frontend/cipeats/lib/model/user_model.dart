@@ -42,8 +42,8 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       email: json['email'] ?? '',
-      password: json['password'] ?? '',
-      fullName: json['fullName'] ?? '',
+      password: '',
+      fullName: json['name'] ?? '',
       rememberMe: json['rememberMe'] ?? false,
       passwordVisible: json['passwordVisible'] ?? false,
     );

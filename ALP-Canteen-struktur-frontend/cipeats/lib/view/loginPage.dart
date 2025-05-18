@@ -68,9 +68,11 @@ class LoginPage extends ConsumerWidget {
                   width: double.infinity,
                   height: 45,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/');
-                    },
+                    onPressed: vm.isLoading
+                        ? null // disable button while loading
+                        : () async {
+                            await ref.read(loginViewModelProvider.notifier).login(context);
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepOrange,
                       shape: RoundedRectangleBorder(

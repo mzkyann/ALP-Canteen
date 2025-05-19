@@ -191,13 +191,34 @@ class HomePage extends ConsumerWidget {
           const SizedBox(height: 16),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Beranda"),
-          BottomNavigationBarItem(icon: Icon(Icons.receipt), label: "Pesanan"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Akun"),
-        ],
+        bottomNavigationBar: SizedBox(
+        height: 70,
+        child: BottomNavigationBar(
+          currentIndex: 2, // Set this dynamically based on current page
+          backgroundColor: const Color.fromARGB(255, 54, 54, 54),
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white,
+          selectedIconTheme: const IconThemeData(size: 30),
+          unselectedIconTheme: const IconThemeData(size: 26),
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                Navigator.pushReplacementNamed(context, '/home');
+                break;
+              case 1:
+                Navigator.pushReplacementNamed(context, '/pesanan');
+                break;
+              case 2:
+                Navigator.pushReplacementNamed(context, '/akun');
+                break;
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "Beranda"),
+            BottomNavigationBarItem(icon: Icon(Icons.fastfood), label: "Pesanan"),
+            BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: "Akun"),
+          ],
+        ),
       ),
     );
   }

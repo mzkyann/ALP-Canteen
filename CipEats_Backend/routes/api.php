@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\SellerVerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
@@ -52,6 +53,8 @@ Route::prefix('v1')->group(function () {
             return response()->json(['message' => 'Verification email sent']);
         })->middleware('throttle:6,1')->name('verification.send');
 
+
+        
         // Cart and Seller routes remain as is...
         Route::get('/cart', [CartController::class, 'index']);
         Route::post('/cart', [CartController::class, 'add']);
@@ -65,6 +68,8 @@ Route::prefix('v1')->group(function () {
         Route::patch('/order-items/{id}/status', [OrderController::class, 'updateOrderItemStatus']); // Seller updates status
         Route::get('/orders/status', [OrderController::class, 'getOrdersByStatus']);
 
+        Route::get('/history/{id}', [HistoryController::class, 'customerHistory']); // Customer order history
+
         Route::prefix('seller')->group(function () {
             Route::post('/verify', [SellerVerificationController::class, 'store']);
             Route::get('/verification-status', [SellerVerificationController::class, 'status']);
@@ -72,7 +77,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/foods/{food}', [FoodController::class, 'update']);
             Route::patch('/foods/{food}/availability', [FoodController::class, 'setAvailability']);
             Route::delete('/foods/{food}', [FoodController::class, 'destroy']);
-            
+            Route::get('/history/{id}', [HistoryController::class, 'sellerHistory']); // Seller order history
         });
 
         Route::middleware('admin')->group(function () {

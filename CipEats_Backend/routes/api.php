@@ -78,6 +78,7 @@ Route::prefix('v1')->group(function () {
             Route::patch('/foods/{food}/availability', [FoodController::class, 'setAvailability']);
             Route::delete('/foods/{food}', [FoodController::class, 'destroy']);
             Route::get('/history/{id}', [HistoryController::class, 'sellerHistory']); // Seller order history
+            Route::get('/revenue', [OrderController::class, 'sellerRevenue']); 
         });
 
         Route::middleware('admin')->group(function () {

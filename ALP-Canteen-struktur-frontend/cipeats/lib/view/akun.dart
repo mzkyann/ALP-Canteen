@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../view_model/menu_view_model.dart';
-import '../model/menu_item.dart';
+import '../user_view_model.dart';
 
 class AkunPage extends ConsumerStatefulWidget {
   const AkunPage({super.key});
@@ -14,18 +13,25 @@ class _AkunPageState extends ConsumerState<AkunPage> {
   bool isEditing = false;
   bool showPassword = false;
 
-  final TextEditingController _nameController =
-      TextEditingController(text: "Hainzel Kemal");
-  final TextEditingController _emailController =
-      TextEditingController(text: "hainzelganteng@student.ciputra.ac.id");
-  final TextEditingController _phoneController =
-      TextEditingController(text: "081213241234");
-  final TextEditingController _passwordController =
-      TextEditingController(text: "password");
+  late TextEditingController nameController;
+  late TextEditingController emailController;
+  late TextEditingController phoneController;
+  late TextEditingController passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = ref.read(userProvider);
+    nameController = TextEditingController(text: user.fullName);
+    emailController = TextEditingController(text: user.email);
+    phoneController = TextEditingController(text: user.phone);
+    passwordController = TextEditingController(text: user.password);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final menuList = ref.watch(menuProvider);
+    final user = ref.watch(userProvider);
+    final userNotifier = ref.read(userProvider.notifier);
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 250, 250, 250),
@@ -52,10 +58,7 @@ class _AkunPageState extends ConsumerState<AkunPage> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            Image.asset(
-              'assets/images/logo.png',
-              height: 100,
-            ),
+            Image.asset('assets/images/logo.png', height: 100),
             const SizedBox(height: 20),
             Card(
               elevation: 2,
@@ -66,11 +69,9 @@ class _AkunPageState extends ConsumerState<AkunPage> {
               child: Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: const BoxDecoration(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(12)),
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
                       gradient: LinearGradient(
                         colors: [Colors.orange, Colors.deepOrange],
                         begin: Alignment.topLeft,
@@ -95,8 +96,13 @@ class _AkunPageState extends ConsumerState<AkunPage> {
                           onPressed: () {
                             setState(() {
                               isEditing = !isEditing;
-                              if (!isEditing) {
-                                showPassword = false;
+                              if (!isEditing) showPassword = false;
+
+                              if (isEditing) {
+                                nameController.text = user.fullName;
+                                emailController.text = user.email;
+                                phoneController.text = user.phone;
+                                passwordController.text = user.password;
                               }
                             });
                           },
@@ -104,11 +110,27 @@ class _AkunPageState extends ConsumerState<AkunPage> {
                       ],
                     ),
                   ),
-                  buildInfoField("Nama", _nameController),
-                  buildInfoField("Email", _emailController),
-                  buildInfoField("No. Telp", _phoneController),
-                  buildInfoField("Password", _passwordController,
-                      isPassword: true),
+                  buildInfoField(
+                    label: "Nama",
+                    controller: nameController,
+                    onChanged: userNotifier.updateName,
+                  ),
+                  buildInfoField(
+                    label: "Email",
+                    controller: emailController,
+                    onChanged: userNotifier.updateEmail,
+                  ),
+                  buildInfoField(
+                    label: "No. Telp",
+                    controller: phoneController,
+                    onChanged: userNotifier.updatePhone,
+                  ),
+                  buildInfoField(
+                    label: "Password",
+                    controller: passwordController,
+                    onChanged: userNotifier.updatePassword,
+                    isPassword: true,
+                  ),
                 ],
               ),
             ),
@@ -131,12 +153,10 @@ class _AkunPageState extends ConsumerState<AkunPage> {
                         isEditing = false;
                         showPassword = false;
                       });
-                      // You can handle the saving logic here
                     },
                     child: const Text(
                       'Simpan',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ),
                 ),
@@ -176,8 +196,12 @@ class _AkunPageState extends ConsumerState<AkunPage> {
     );
   }
 
-  Widget buildInfoField(String label, TextEditingController controller,
-      {bool isPassword = false}) {
+  Widget buildInfoField({
+    required String label,
+    required TextEditingController controller,
+    required Function(String) onChanged,
+    bool isPassword = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
@@ -185,15 +209,14 @@ class _AkunPageState extends ConsumerState<AkunPage> {
         children: [
           Text(
             label,
-            style:
-                const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
           ),
-          const SizedBox(height: 0),
           Row(
             children: [
               Expanded(
                 child: TextField(
                   controller: controller,
+                  onChanged: isEditing ? onChanged : null,
                   readOnly: !isEditing,
                   obscureText: isPassword && !showPassword,
                   decoration: const InputDecoration(
@@ -218,7 +241,7 @@ class _AkunPageState extends ConsumerState<AkunPage> {
                 ),
             ],
           ),
-          const Divider(thickness: 1, indent: 0, endIndent: 0),
+          const Divider(thickness: 1),
         ],
       ),
     );

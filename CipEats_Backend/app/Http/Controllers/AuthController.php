@@ -110,10 +110,15 @@ class AuthController extends Controller
                 'success' => true,
                 'message' => 'Login successful',
                 'data' => [
-                    'user' => $user,
+                    'user' => [
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        // Add other fields you need, like 'id' or 'role'
+                    ],
                     'token' => $token,
                     'is_verified_seller' => $user->isVerifiedSeller(),
                 ]
+
             ]);
 
         } catch (\Exception $e) {

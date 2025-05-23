@@ -2,6 +2,7 @@ class UserModel {
   final String email;
   final String password;
   final String fullName;
+  final String phone;
   final bool rememberMe;
   final bool passwordVisible;
 
@@ -9,6 +10,7 @@ class UserModel {
     this.email = '',
     this.password = '',
     this.fullName = '',
+    this.phone = '',
     this.rememberMe = false,
     this.passwordVisible = false,
   });
@@ -17,6 +19,7 @@ class UserModel {
     String? email,
     String? password,
     String? fullName,
+    String? phone,
     bool? rememberMe,
     bool? passwordVisible,
   }) {
@@ -24,6 +27,7 @@ class UserModel {
       email: email ?? this.email,
       password: password ?? this.password,
       fullName: fullName ?? this.fullName,
+      phone: phone ?? this.phone,
       rememberMe: rememberMe ?? this.rememberMe,
       passwordVisible: passwordVisible ?? this.passwordVisible,
     );
@@ -34,6 +38,7 @@ class UserModel {
       'email': email,
       'password': password,
       'fullName': fullName,
+      'phone': phone,
       'rememberMe': rememberMe,
       'passwordVisible': passwordVisible,
     };
@@ -43,7 +48,8 @@ class UserModel {
     return UserModel(
       email: json['email'] ?? '',
       password: '',
-      fullName: json['name'] ?? '',
+      fullName: json['fullName'] ?? '',
+      phone: json['phone'] ?? '',
       rememberMe: json['rememberMe'] ?? false,
       passwordVisible: json['passwordVisible'] ?? false,
     );

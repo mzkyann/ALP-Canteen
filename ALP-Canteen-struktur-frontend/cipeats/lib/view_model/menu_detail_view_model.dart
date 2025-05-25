@@ -4,7 +4,7 @@ import '../model/menu_item.dart';
 final menuDetailProvider = StateProvider<List<MenuItem>>((ref) {
   return [
     MenuItem(
-      name: 'Nasi Goreng',
+      name: 'Nasi goreng',
       imageUrl: 'assets/images/Nasi_Goreng.png',
       price: 12000,
       vendor: 'Chick on Cup',

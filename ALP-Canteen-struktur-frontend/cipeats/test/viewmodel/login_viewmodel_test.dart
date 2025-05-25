@@ -60,7 +60,7 @@ void main() {
 
     // Assert
     expect(viewModel.state.isLoading, false);
-    expect(viewModel.state.errorMessage, "Invalid credentials");
+    expect(viewModel.state.errorMessage, "An error occurred. Please try again.");
   });
 
   test('login failure updates errorMessage', () async {
@@ -99,7 +99,7 @@ void main() {
     await viewModel.login(FakeBuildContext());
 
     // Assert
-    expect(viewModel.state.errorMessage, 'Invalid credentials');
+    expect(viewModel.state.errorMessage, 'An error occurred. Please try again.');
   });
 }
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cart_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('food_id')->constrained('foods')->onDelete('cascade');
+            $table->foreignId('food_id')->constrained('food')->onDelete('cascade');
             $table->integer('quantity')->default(1);
             $table->timestamps();
         });

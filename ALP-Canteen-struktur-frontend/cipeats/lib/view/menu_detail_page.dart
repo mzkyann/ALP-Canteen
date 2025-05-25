@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/menu_detail_view_model.dart';
+import '../model/menu_item.dart';
 
 class MenuDetailPage extends ConsumerWidget {
-  const MenuDetailPage({super.key});
+  final int index;
+
+  const MenuDetailPage({this.index = 0, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final item = ref.watch(menuDetailProvider);
+    final menuList = ref.watch(menuDetailProvider);
+    final item = menuList[index];
+
     final TextEditingController catatanController = TextEditingController();
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -31,7 +36,7 @@ class MenuDetailPage extends ConsumerWidget {
           title: const Text(
             'Kantin UC',
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
           ),
         ),
       ),
@@ -57,7 +62,7 @@ class MenuDetailPage extends ConsumerWidget {
                       top: 10,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 4, horizontal: 8),
+                          vertical: 4, horizontal: 8),
                         decoration: BoxDecoration(
                           color: Colors.green,
                           borderRadius: BorderRadius.circular(6),
@@ -131,8 +136,6 @@ class MenuDetailPage extends ConsumerWidget {
               ),
             ],
           ),
-
-          // Tombol Back di kiri atas
           Positioned(
             top: 16 + MediaQuery.of(context).padding.top,
             left: 16,

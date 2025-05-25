@@ -1,7 +1,7 @@
+import 'package:cipeats/model/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/vendor_menu_view_model.dart';
-import '../model/menu_item.dart';
 import '../view_model/menu_detail_view_model.dart';
 import 'menu_detail_page.dart';
 
@@ -14,27 +14,43 @@ class Vendor2Page extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        toolbarHeight: 70,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.orange, Colors.deepOrange],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: const Text(
+          'Kantin UC',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        elevation: 0,
+      ),
       body: SafeArea(
         child: Stack(
           children: [
             Column(
               children: [
                 const SizedBox(height: 8),
-                Image.asset('assets/images/WarungAw.png', height: 100),
+                Image.asset('assets/images/ChickonCup.png', height: 100),
                 const Text(
-                  "Warung AW",
+                  "Chick on Cup",
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const Divider(thickness: 2),
                 const SizedBox(height: 10),
-
-                // Grid Menu yang responsif
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: GridView.builder(
                       itemCount: menuItems.length,
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 200,
                         mainAxisExtent: 180,
                         crossAxisSpacing: 12,
@@ -45,16 +61,18 @@ class Vendor2Page extends ConsumerWidget {
 
                         return GestureDetector(
                           onTap: () {
-                            ref.read(menuDetailProvider.notifier).state = item;
+                            ref.read(menuDetailProvider.notifier).state = item as List<MenuItem>;
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => const MenuDetailPage()),
+                                builder: (_) => const MenuDetailPage(),
+                              ),
                             );
                           },
                           child: Card(
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             elevation: 3,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,7 +81,8 @@ class Vendor2Page extends ConsumerWidget {
                                   children: [
                                     ClipRRect(
                                       borderRadius: const BorderRadius.vertical(
-                                          top: Radius.circular(10)),
+                                        top: Radius.circular(10),
+                                      ),
                                       child: Image.asset(
                                         item.imageUrl,
                                         height: 100,
@@ -77,30 +96,31 @@ class Vendor2Page extends ConsumerWidget {
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                           color: Colors.black.withOpacity(0.6),
-                                          borderRadius:
-                                              const BorderRadius.vertical(
-                                                  top: Radius.circular(10)),
+                                          borderRadius: const BorderRadius.vertical(
+                                            top: Radius.circular(10),
+                                          ),
                                         ),
                                         alignment: Alignment.center,
-                                        child: const Text("Habis",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold)),
-                                      )
+                                        child: const Text(
+                                          "Habis",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(item.name,
                                           style: const TextStyle(
                                               fontWeight: FontWeight.bold)),
                                       Text("Rp ${item.price}",
-                                          style: const TextStyle(
-                                              color: Colors.grey)),
+                                          style: const TextStyle(color: Colors.grey)),
                                       Align(
                                         alignment: Alignment.bottomRight,
                                         child: Icon(
@@ -124,8 +144,6 @@ class Vendor2Page extends ConsumerWidget {
                 ),
               ],
             ),
-
-            // Tombol Back elegan (mengambang)
             Positioned(
               top: 16,
               left: 16,
@@ -145,8 +163,6 @@ class Vendor2Page extends ConsumerWidget {
           ],
         ),
       ),
-
-      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         items: const [
@@ -154,8 +170,8 @@ class Vendor2Page extends ConsumerWidget {
           BottomNavigationBarItem(icon: Icon(Icons.receipt), label: "Pesanan"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Akun"),
         ],
-        selectedItemColor: Colors.grey[800],
-        unselectedItemColor: Colors.grey[400],
+        selectedItemColor: Colors.grey,
+        unselectedItemColor: Colors.grey,
         backgroundColor: Colors.white,
         showUnselectedLabels: true,
         showSelectedLabels: true,

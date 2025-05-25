@@ -1,7 +1,7 @@
+import 'package:cipeats/model/menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/vendor_menu_view_model.dart';
-import '../model/menu_item.dart';
 import '../view_model/menu_detail_view_model.dart';
 import 'menu_detail_page.dart';
 
@@ -46,13 +46,13 @@ class Vendor1Page extends ConsumerWidget {
                 const Divider(thickness: 2),
                 const SizedBox(height: 10),
 
-                // Grid Menu yang responsif
+                // Grid Menu
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: GridView.builder(
                       itemCount: menuItems.length,
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 200,
                         mainAxisExtent: 180,
                         crossAxisSpacing: 12,
@@ -63,16 +63,18 @@ class Vendor1Page extends ConsumerWidget {
 
                         return GestureDetector(
                           onTap: () {
-                            ref.read(menuDetailProvider.notifier).state = item;
+                            ref.read(menuDetailProvider.notifier).state = item as List<MenuItem>;
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => const MenuDetailPage()),
+                                builder: (_) => const MenuDetailPage(),
+                              ),
                             );
                           },
                           child: Card(
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             elevation: 3,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,7 +83,8 @@ class Vendor1Page extends ConsumerWidget {
                                   children: [
                                     ClipRRect(
                                       borderRadius: const BorderRadius.vertical(
-                                          top: Radius.circular(10)),
+                                        top: Radius.circular(10),
+                                      ),
                                       child: Image.asset(
                                         item.imageUrl,
                                         height: 100,
@@ -95,23 +98,25 @@ class Vendor1Page extends ConsumerWidget {
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                           color: Colors.black.withOpacity(0.6),
-                                          borderRadius:
-                                              const BorderRadius.vertical(
-                                                  top: Radius.circular(10)),
+                                          borderRadius: const BorderRadius.vertical(
+                                            top: Radius.circular(10),
+                                          ),
                                         ),
                                         alignment: Alignment.center,
-                                        child: const Text("Habis",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold)),
-                                      )
+                                        child: const Text(
+                                          "Habis",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(item.name,
                                           style: const TextStyle(
@@ -143,7 +148,7 @@ class Vendor1Page extends ConsumerWidget {
               ],
             ),
 
-            // Tombol Back elegan (mengambang)
+            // Tombol Back
             Positioned(
               top: 16,
               left: 16,
@@ -164,7 +169,7 @@ class Vendor1Page extends ConsumerWidget {
         ),
       ),
 
-      // Bottom Navigation Bar
+      // Bottom Navigation
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         items: const [

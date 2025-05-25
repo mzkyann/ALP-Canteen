@@ -11,7 +11,6 @@ use Tests\TestCase;
 
 class CartAndOrderTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected $user;
     protected $food;

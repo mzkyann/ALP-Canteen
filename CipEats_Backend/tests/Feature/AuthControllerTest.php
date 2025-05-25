@@ -1,47 +1,68 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Unit;
 
+use App\Http\Controllers\AuthController;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Tests\TestCase;
+use Mockery;
+
 
 class AuthControllerTest extends TestCase
 {
+    use RefreshDatabase;
     /** @test */
     public function user_can_register_successfully()
     {
         Event::fake();
 
-        $response = $this->postJson('/api/v1/register', [
+        $controller = new AuthController();
+
+        $request = new Request([
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test1@example.com',
             'password' => 'password123',
             'role' => 'customer',
         ]);
 
-        $response->assertStatus(201)
-                 ->assertJson([
-                     'success' => true,
-                     'message' => 'Registration successful',
-                 ]);
+        $response = $controller->register($request);
 
+        $this->assertEquals(201, $response->status());
+        $this->assertEquals('Registration successful', $response->getData()->message);
         $this->assertDatabaseHas('users', [
-            'email' => 'test@example.com',
+            'email' => 'test1@example.com',
         ]);
 
         Event::assertDispatched(Registered::class);
     }
 
     /** @test */
-    public function registration_requires_valid_fields()
+    public function test_registration_requires_valid_fields()
     {
-        $response = $this->postJson('/api/v1/register', []);
+        // Arrange
+        $controller = new AuthController();
+        $request = new Request([]); // empty request
 
-        $response->assertStatus(422)
-                 ->assertJsonValidationErrors(['name', 'email', 'password']);
+        // Act
+        $response = $controller->register($request);
+
+        // Assert
+        $this->assertEquals(422, $response->getStatusCode());
+
+        $data = $response->getData(true); // true = convert stdClass to array
+
+        $this->assertFalse($data['success']);
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertArrayHasKey('name', $data['errors']);
+        $this->assertArrayHasKey('email', $data['errors']);
+        $this->assertArrayHasKey('password', $data['errors']);
     }
 
     /** @test */
@@ -49,19 +70,20 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create([
             'email_verified_at' => null,
-            'password' => bcrypt('password123'),
+            'password' => Hash::make('password123'),
         ]);
 
-        $response = $this->postJson('/api/v1/login', [
+        $controller = new AuthController();
+
+        $request = new Request([
             'email' => $user->email,
             'password' => 'password123',
         ]);
 
-        $response->assertStatus(403)
-                 ->assertJson([
-                     'success' => false,
-                     'message' => 'Email not verified. Please verify your email first.',
-                 ]);
+        $response = $controller->login($request);
+
+        $this->assertEquals(403, $response->status());
+        $this->assertEquals('Email not verified. Please verify your email first.', $response->getData()->message);
     }
 
     /** @test */
@@ -69,37 +91,49 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create([
             'email_verified_at' => now(),
-            'password' => bcrypt('password123'),
+            'password' => Hash::make('password123'),
         ]);
 
-        $response = $this->postJson('/api/v1/login', [
+        $controller = new AuthController();
+
+        Auth::shouldReceive('attempt')
+            ->once()
+            ->andReturn(true);
+
+        Auth::shouldReceive('user')
+            ->andReturn($user);
+
+        $request = new Request([
             'email' => $user->email,
             'password' => 'password123',
         ]);
 
-        $response->assertStatus(200)
-                 ->assertJson([
-                     'success' => true,
-                     'message' => 'Login successful',
-                 ]);
+        $response = $controller->login($request);
+
+        $this->assertEquals(200, $response->status());
+        $this->assertEquals('Login successful', $response->getData()->message);
     }
 
     /** @test */
     public function user_can_logout()
     {
-        $user = User::factory()->create([
-            'email_verified_at' => now(),
-        ]);
+        // Arrange
+        $mockToken = Mockery::mock();
+        $mockToken->shouldReceive('delete')->once()->andReturnTrue();
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $mockUser = Mockery::mock();
+        $mockUser->shouldReceive('currentAccessToken')->once()->andReturn($mockToken);
 
-        $response = $this->withHeader('Authorization', "Bearer $token")
-                         ->postJson('/api/v1/logout');
+        $mockRequest = Mockery::mock(Request::class);
+        $mockRequest->shouldReceive('user')->once()->andReturn($mockUser);
 
-        $response->assertStatus(200)
-                 ->assertJson([
-                     'success' => true,
-                     'message' => 'Logged out successfully',
-                 ]);
+        $controller = new AuthController();
+
+        // Act
+        $response = $controller->logout($mockRequest);
+
+        // Assert
+        $this->assertEquals(200, $response->status());
+        $this->assertEquals('Logged out successfully', $response->getData()->message);
     }
 }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/login_model.dart';
-import '../service/login_service.dart';
+import '../service/auth_service.dart';
 import '../model/user_model.dart';
+import '../service/auth_service_wrapper.dart';
 
 class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
-  LoginViewModelNotifier() : super(LoginViewModel());
+  final AuthServiceWrapper authService;
+
+  LoginViewModelNotifier({required this.authService}) : super(LoginViewModel());
 
   void setEmail(String email) {
     state = state.copyWith(email: email, errorMessage: null);
@@ -32,7 +35,7 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final result = await AuthService.login(
+      final result = await authService.login(
         email: state.email,
         password: state.password,
       );
@@ -64,4 +67,4 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
 
 final loginViewModelProvider =
     StateNotifierProvider<LoginViewModelNotifier, LoginViewModel>(
-        (ref) => LoginViewModelNotifier());
+        (ref) => LoginViewModelNotifier(authService: AuthServiceWrapper()));

@@ -1,13 +1,13 @@
-import 'package:cipeats/view/pesanan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'view/home_page.dart';
-import 'view/vendor1.dart'; 
-import 'view/vendor2.dart'; 
-import 'view/menu_detail_page.dart';
-import 'view/loginPage.dart';
+
 import 'view/splash_screen.dart';
+import 'view/loginPage.dart';
 import 'view/register_page.dart';
+import 'view/home_page.dart';
+import 'view/vendor1.dart';
+import 'view/vendor2.dart';
+import 'view/menu_detail_page.dart';
 import 'view/akun.dart';
 import 'view/pesanan.dart';
 import 'view/checkout.dart';
@@ -29,13 +29,13 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/splash',
       routes: {
+        '/splash': (context) => const SplashScreen(),
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
         '/home': (context) => const HomePage(),
-         '/splash': (context) => const SplashScreen(),
-         '/login': (context) => const LoginPage(),   
-         '/register': (context) => const RegisterPage(),         
-        '/vendor1': (context) => const Vendor1Page(), 
-        '/vendor2': (context) => const Vendor2Page(), 
+        '/vendor1': (context) => const Vendor1Page(),
         '/detail': (context) => const MenuDetailPage(),
+        '/vendor2': (context) => const Vendor2Page(),
         '/akun': (context) => const AkunPage(), 
         '/pesanan': (context) => const PesananPage(),
         '/checkout': (context) => const CheckoutPage(), 

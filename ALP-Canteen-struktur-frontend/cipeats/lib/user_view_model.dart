@@ -11,29 +11,10 @@ class UserViewModel extends StateNotifier<UserModel> {
           password: 'password',
         ));
 
-  void updateName(String name) => state = UserModel(
-      fullName: name,
-      email: state.email,
-      phone: state.phone,
-      password: state.password);
-
-  void updateEmail(String email) => state = UserModel(
-      fullName: state.fullName,
-      email: email,
-      phone: state.phone,
-      password: state.password);
-
-  void updatePhone(String phone) => state = UserModel(
-      fullName: state.fullName,
-      email: state.email,
-      phone: phone,
-      password: state.password);
-
-  void updatePassword(String password) => state = UserModel(
-      fullName: state.fullName,
-      email: state.email,
-      phone: state.phone,
-      password: password);
+  void updateName(String name) => state = state.copyWith(fullName: name);
+  void updateEmail(String email) => state = state.copyWith(email: email);
+  void updatePhone(String phone) => state = state.copyWith(phone: phone);
+  void updatePassword(String password) => state = state.copyWith(password: password);
 }
 
 final userProvider = StateNotifierProvider<UserViewModel, UserModel>((ref) {

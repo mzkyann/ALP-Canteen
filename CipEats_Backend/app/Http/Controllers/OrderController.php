@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
+
 class OrderController extends Controller
 {
     /**
@@ -221,6 +222,54 @@ public function updateStatusBasedOnItems()
 
         return response()->json($orders);
     }
+
+
+
+
+public function sellerRevenue(Request $request)
+{
+    $user = Auth::user();
+    $sellerId = auth()->id();
+
+    $query = OrderItem::query()
+        ->whereHas('food', function ($q) use ($user) {
+            $q->where('user_id', $user->id); // Get seller's food
+        })
+        ->whereHas('order', function ($q) {
+            $q->whereIn('status', ['siap', 'diantar']);
+        });
+
+    if ($request->has(['start_date', 'end_date'])) {
+        $query->whereHas('order', function ($q) use ($request) {
+            $q->whereBetween('created_at', [
+                $request->input('start_date'),
+                $request->input('end_date'),
+            ]);
+        });
+    }
+
+    // Join orders to get order date for monthly grouping
+    $query->join('orders', 'orders.id', '=', 'order_items.order_id');
+
+    $revenue = DB::table('order_items')
+        ->join('orders', 'orders.id', '=', 'order_items.order_id')
+        ->join('food', 'food.id', '=', 'order_items.food_id')
+        ->select(
+            DB::raw("DATE_FORMAT(orders.created_at, '%Y-%m') as month"),
+            DB::raw("SUM(order_items.quantity * order_items.price) as revenue")
+        )
+        ->where('food.user_id', $sellerId)
+        ->whereIn('orders.status', ['siap', 'diantar'])
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get();
+
+
+    return response()->json([
+        'success' => true,
+        'data' => $revenue
+    ]);
+}
 
 
 }

@@ -10,6 +10,7 @@ import 'view/splash_screen.dart';
 import 'view/register_page.dart';
 import 'view/akun.dart';
 import 'view/pesanan.dart';
+import 'view/checkout.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -36,7 +37,8 @@ class MyApp extends StatelessWidget {
         '/vendor2': (context) => const Vendor2Page(), 
         '/detail': (context) => const MenuDetailPage(),
         '/akun': (context) => const AkunPage(), 
-        '/pesanan': (context) => const PesananPage(), 
+        '/pesanan': (context) => const PesananPage(),
+        '/checkout': (context) => const CheckoutPage(), 
       },
     );
   }

@@ -13,7 +13,7 @@ final menuProvider = Provider<List<MenuItem>>((ref) {
           "Nasi goreng dengan bumbu khas, bisa ditambah topping seperti ayam, telur, sosis, dan kerupuk.",
     ),
     MenuItem(
-      name: "Mie Kanton",
+      name: "Mie kanton",
       imageUrl: "assets/images/Mie_Kanton.png",
       price: 15000,
       vendor: "Warung AW",

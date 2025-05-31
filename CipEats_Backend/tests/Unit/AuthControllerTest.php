@@ -28,7 +28,7 @@ class AuthControllerTest extends TestCase
         $request = new Request([
             'name' => 'Test User',
             'email' => 'test1@example.com',
-            'password' => 'password123',
+            'password' => 'password12',
             'role' => 'customer',
         ]);
 
@@ -56,7 +56,7 @@ class AuthControllerTest extends TestCase
         // Assert
         $this->assertEquals(422, $response->getStatusCode());
 
-        $data = $response->getData(true); // true = convert stdClass to array
+        $data = $response->getData(true); 
 
         $this->assertFalse($data['success']);
         $this->assertArrayHasKey('errors', $data);
@@ -105,7 +105,7 @@ class AuthControllerTest extends TestCase
 
         $request = new Request([
             'email' => $user->email,
-            'password' => 'password123',
+            'password' => 'password',
         ]);
 
         $response = $controller->login($request);

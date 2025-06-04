@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../model/menu_item.dart';
 
 class MenuDetailService {
-  final String baseUrl = "http://10.0.2.2:8000/api"; // Ganti jika bukan emulator
+  final String baseUrl = "http://10.0.2.2:8000/api"; 
 
   Future<MenuItem> fetchMenuItemDetail(String menuName) async {
     try {

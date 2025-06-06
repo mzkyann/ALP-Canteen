@@ -12,6 +12,13 @@ class Order extends Model
         'user_id',
         'total_price',
         'status',
+        'delivery_method',   // <-- Add this
+        'scheduled_time',    // <-- And this
+    ];
+
+    // Cast scheduled_time to Carbon instance
+    protected $casts = [
+        'scheduled_time' => 'datetime',
     ];
 
     // Customer who placed the order
@@ -21,11 +28,12 @@ class Order extends Model
     }
 
     // Order items for this order
-    public function orderItems()
+    public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
 
+    // Automatically update order status based on items
     public function updateStatusBasedOnItems()
     {
         $statuses = $this->orderItems()->pluck('status')->unique();

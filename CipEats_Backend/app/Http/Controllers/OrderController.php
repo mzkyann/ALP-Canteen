@@ -21,9 +21,15 @@ class OrderController extends Controller
 public function placeOrder(Request $request)
 {
     $user = Auth::user();
+
     if ($user->role !== 'customer') {
         return response()->json(['error' => 'Only customers can place orders.'], 403);
     }
+
+    $request->validate([
+        'delivery_method' => 'required|in:pickup,delivery',
+        'scheduled_time' => 'nullable|date|after_or_equal:today|before:tomorrow',
+    ]);
 
     $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('food')->get();
 
@@ -35,17 +41,17 @@ public function placeOrder(Request $request)
     try {
         $totalPrice = 0;
 
-        // Calculate total
         foreach ($cartItems as $cartItem) {
             $food = $cartItem->food;
             $totalPrice += $food->price * $cartItem->quantity;
         }
 
-        // Create order with total
         $order = Order::create([
             'user_id' => $user->id,
             'status' => 'pending',
             'total_price' => $totalPrice,
+            'delivery_method' => $request->delivery_method,
+            'scheduled_time' => $request->scheduled_time, // can be null
         ]);
 
         foreach ($cartItems as $cartItem) {
@@ -58,7 +64,7 @@ public function placeOrder(Request $request)
                 'seller_id' => $food->user_id,
                 'status' => 'pending',
                 'estimated_time' => $food->estimated_time,
-                'price' => $food->price, // Add this if your `order_items` table tracks individual prices
+                'price' => $food->price,
             ]);
         }
 
@@ -67,10 +73,11 @@ public function placeOrder(Request $request)
         DB::commit();
 
         return response()->json([
-            'message' => 'Order placed successfully from cart.',
+            'message' => 'Order placed successfully.',
             'order_id' => $order->id,
             'total_price' => $totalPrice,
         ], 201);
+
     } catch (\Exception $e) {
         DB::rollBack();
         return response()->json(['error' => 'Failed to place order.'], 500);

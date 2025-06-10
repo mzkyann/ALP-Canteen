@@ -12,6 +12,7 @@ import 'view/akun.dart';
 import 'view/pesanan.dart';
 import 'view/checkout.dart';
 import 'view/bayar.dart';
+import 'view/keranjang.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
         useMaterial3: true,
       ),
-      initialRoute: '/splash',
+      initialRoute: '/home',
       routes: {
         '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LoginPage(),
@@ -37,10 +38,11 @@ class MyApp extends StatelessWidget {
         '/vendor1': (context) => const Vendor1Page(),
         '/detail': (context) => const MenuDetailPage(),
         '/vendor2': (context) => const Vendor2Page(),
-        '/akun': (context) => const AkunPage(), 
+        '/akun': (context) => const AkunPage(),
         '/pesanan': (context) => const PesananPage(),
         '/checkout': (context) => const CheckoutPage(),
         '/bayar': (context) => const BayarPage(),
+        '/keranjang': (context) => const KeranjangPage(),
       },
     );
   }

@@ -31,7 +31,9 @@ public function placeOrder(Request $request)
         'scheduled_time' => 'nullable|date|after_or_equal:today|before:tomorrow',
     ]);
 
-    $cartItems = \App\Models\CartItem::where('user_id', $user->id)->with('food')->get();
+    $cartItems = \App\Models\CartItem::where('user_id', $user->id)
+        ->with(['food', 'prasmanan']) // eager load both relations
+        ->get();
 
     if ($cartItems->isEmpty()) {
         return response()->json(['error' => 'Your cart is empty.'], 400);
@@ -41,9 +43,12 @@ public function placeOrder(Request $request)
     try {
         $totalPrice = 0;
 
-        foreach ($cartItems as $cartItem) {
-            $food = $cartItem->food;
-            $totalPrice += $food->price * $cartItem->quantity;
+        foreach ($cartItems as $item) {
+            if ($item->food) {
+                $totalPrice += $item->food->price * $item->quantity;
+            } elseif ($item->prasmanan) {
+                $totalPrice += $item->prasmanan->price * $item->quantity;
+            }
         }
 
         $order = Order::create([
@@ -51,21 +56,31 @@ public function placeOrder(Request $request)
             'status' => 'pending',
             'total_price' => $totalPrice,
             'delivery_method' => $request->delivery_method,
-            'scheduled_time' => $request->scheduled_time, // can be null
+            'scheduled_time' => $request->scheduled_time,
         ]);
 
-        foreach ($cartItems as $cartItem) {
-            $food = $cartItem->food;
-
-            OrderItem::create([
-                'order_id' => $order->id,
-                'food_id' => $food->id,
-                'quantity' => $cartItem->quantity,
-                'seller_id' => $food->user_id,
-                'status' => 'pending',
-                'estimated_time' => $food->estimated_time,
-                'price' => $food->price,
-            ]);
+        foreach ($cartItems as $item) {
+            if ($item->food) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'food_id' => $item->food->id,
+                    'quantity' => $item->quantity,
+                    'seller_id' => $item->food->user_id,
+                    'status' => 'pending',
+                    'estimated_time' => $item->food->estimated_time,
+                    'price' => $item->food->price,
+                ]);
+            } elseif ($item->prasmanan) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'prasmanan_id' => $item->prasmanan->id,
+                    'quantity' => $item->quantity,
+                    'seller_id' => $item->prasmanan->user_id,
+                    'status' => 'pending',
+                    'estimated_time' => $item->prasmanan->estimated_time,
+                    'price' => $item->prasmanan->price,
+                ]);
+            }
         }
 
         \App\Models\CartItem::where('user_id', $user->id)->delete();
@@ -83,6 +98,7 @@ public function placeOrder(Request $request)
         return response()->json(['error' => 'Failed to place order.'], 500);
     }
 }
+
 
     /**
      * Seller views their own orders (order items only related to them)

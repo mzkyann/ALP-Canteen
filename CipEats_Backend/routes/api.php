@@ -8,6 +8,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\SellerVerificationController;
+use App\Http\Controllers\PrasmananItemController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\URL;
@@ -70,6 +71,8 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/history/{id}', [HistoryController::class, 'customerHistory']); // Customer order history
 
+        Route::get('/prasmanan-items', [PrasmananItemController::class, 'index']);
+
         Route::prefix('seller')->group(function () {
             Route::post('/verify', [SellerVerificationController::class, 'store']);
             Route::get('/verification-status', [SellerVerificationController::class, 'status']);
@@ -79,6 +82,16 @@ Route::prefix('v1')->group(function () {
             Route::delete('/foods/{food}', [FoodController::class, 'destroy']);
             Route::get('/history/{id}', [HistoryController::class, 'sellerHistory']); // Seller order history
             Route::get('/revenue', [OrderController::class, 'sellerRevenue']); 
+
+
+            Route::get('/prasmanan-items', [PrasmananItemController::class, 'index']);
+            Route::post('/prasmanan-items', [PrasmananItemController::class, 'store']);
+            Route::put('/prasmanan-items/{id}', [PrasmananItemController::class, 'update']);
+            Route::delete('/prasmanan-items/{id}', [PrasmananItemController::class, 'destroy']);
+
+            Route::get('/prasmanans', [PrasmanaItemController::class, 'index']);
+            Route::post('/prasmanans', [PrasmananItemController::class, 'store']);
+            Route::delete('/prasmanans/{id}', [PrasmananItemController::class, 'destroy']);
         });
 
         Route::middleware('admin')->group(function () {

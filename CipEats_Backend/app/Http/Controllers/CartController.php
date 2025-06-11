@@ -28,8 +28,9 @@ class CartController extends Controller
         if ($request->has('items')) {
             $request->validate([
                 'items' => 'required|array|min:1',
-                'items.*.food_id' => 'required_without:items.*.prasmanan_id|exists:food,id',
-                'items.*.prasmanan_id' => 'required_without:items.*.food_id|exists:prasmanans,id',
+                'items.*.food_id' => 'required_without:items.*.prasmanan_item_ids|exists:food,id',
+                'items.*.prasmanan_item_ids' => 'required_without:items.*.food_id|array|min:1',
+                'items.*.prasmanan_item_ids.*' => 'exists:prasmanan_items,id',
                 'items.*.quantity' => 'nullable|integer|min:1|max:20',
             ]);
 
@@ -45,7 +46,7 @@ class CartController extends Controller
             ]);
         }
 
-        // Single item mode (including prasmanan bundle)
+        // Single item mode
         $request->validate([
             'food_id' => 'required_without:prasmanan_item_ids|exists:food,id',
             'prasmanan_item_ids' => 'required_without:food_id|array|min:1',
@@ -53,14 +54,7 @@ class CartController extends Controller
             'quantity' => 'nullable|integer|min:1|max:20',
         ]);
 
-        $item = $request->only(['food_id', 'quantity']);
-
-        // Handle prasmanan bundle by generating a hash or using a surrogate ID
-        if ($request->filled('prasmanan_item_ids')) {
-            // You could optionally sort and hash the item IDs for uniqueness
-            $prasmananHash = md5(json_encode(collect($request->prasmanan_item_ids)->sort()->values()));
-            $item['prasmanan_id'] = $prasmananHash; // This assumes CartItem accepts hashed string ID or a surrogate
-        }
+        $item = $request->only(['food_id', 'prasmanan_item_ids', 'quantity']);
 
         $cartItem = $this->addItem($userId, $item, true);
 
@@ -74,17 +68,18 @@ class CartController extends Controller
     {
         $quantity = min($item['quantity'] ?? 1, 20);
 
-        if (isset($item['prasmanan_id'])) {
+        if (isset($item['prasmanan_item_ids'])) {
+            // Sort and hash prasmanan items for a unique bundle ID
+            $sortedIds = collect($item['prasmanan_item_ids'])->sort()->values()->all();
+            $prasmananHash = md5(json_encode($sortedIds));
+
             $cartItem = CartItem::firstOrNew([
                 'user_id' => $userId,
-                'prasmanan_id' => $item['prasmanan_id'],
+                'prasmanan_id' => $prasmananHash,
                 'type' => 'prasmanan',
             ]);
 
-            if (isset($item['prasmanan_item_ids'])) {
-                $cartItem->prasmanan_item_ids = $item['prasmanan_item_ids'];
-            }
-
+            $cartItem->prasmanan_item_ids = $sortedIds;
         } else {
             $cartItem = CartItem::firstOrNew([
                 'user_id' => $userId,

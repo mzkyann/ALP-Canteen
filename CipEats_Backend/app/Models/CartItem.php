@@ -33,4 +33,5 @@ public function prasmanan()
 {
     return $this->belongsToMany(PrasmananItem::class, 'cart_item_prasmanan_item');
 }
+
 }

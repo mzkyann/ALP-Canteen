@@ -9,7 +9,8 @@ class PrasmananItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'price', 'user_id'];
+    protected $fillable = ['name', 'description', 'price', 'user_id', 'image'];
+
 
     public function user()
     {

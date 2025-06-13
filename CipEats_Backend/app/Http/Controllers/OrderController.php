@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\CartItem;
+use App\Models\PrasmananItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,9 +28,7 @@ class OrderController extends Controller
             'scheduled_time' => 'nullable|date|after_or_equal:today|before:tomorrow',
         ]);
 
-        $cartItems = CartItem::where('user_id', $user->id)
-            ->with(['food', 'prasmanan']) // Load both relationships
-            ->get();
+        $cartItems = CartItem::where('user_id', $user->id)->get();
 
         if ($cartItems->isEmpty()) {
             return response()->json(['error' => 'Your cart is empty.'], 400);
@@ -41,10 +40,11 @@ class OrderController extends Controller
             $totalPrice = 0;
 
             foreach ($cartItems as $item) {
-                if ($item->food) {
+                if ($item->food_id) {
                     $totalPrice += $item->food->price * $item->quantity;
-                } elseif ($item->prasmanan && $item->prasmanan->count()) {
-                    $bundlePrice = $item->prasmanan->sum('price');
+                } elseif (!empty($item->prasmanan_item_ids)) {
+                    $prasmananItems = PrasmananItem::whereIn('id', $item->prasmanan_item_ids)->get();
+                    $bundlePrice = $prasmananItems->sum('price');
                     $totalPrice += $bundlePrice * $item->quantity;
                 }
             }
@@ -58,25 +58,27 @@ class OrderController extends Controller
             ]);
 
             foreach ($cartItems as $item) {
-                if ($item->food) {
+                if ($item->food_id) {
                     OrderItem::create([
                         'order_id' => $order->id,
-                        'food_id' => $item->food->id,
+                        'food_id' => $item->food_id,
                         'quantity' => $item->quantity,
                         'seller_id' => $item->food->user_id,
                         'status' => 'pending',
                         'estimated_time' => $item->food->estimated_time,
                         'price' => $item->food->price,
                     ]);
-                } elseif ($item->prasmanan && $item->prasmanan->count()) {
+                } elseif (!empty($item->prasmanan_item_ids)) {
+                    $prasmananItems = PrasmananItem::whereIn('id', $item->prasmanan_item_ids)->get();
+
                     OrderItem::create([
                         'order_id' => $order->id,
-                        'prasmanan_item_ids' => $item->prasmanan->pluck('id')->toArray(),
+                        'prasmanan_item_ids' => $item->prasmanan_item_ids,
                         'quantity' => $item->quantity,
-                        'price' => $item->prasmanan->sum('price'),
-                        'seller_id' => $item->prasmanan->first()->user_id ?? null,
+                        'price' => $prasmananItems->sum('price'),
+                        'seller_id' => $prasmananItems->first()->user_id ?? null,
                         'status' => 'pending',
-                        'estimated_time' => $item->prasmanan->max('estimated_time'),
+                        'estimated_time' => $prasmananItems->max('estimated_time'),
                     ]);
                 }
             }
@@ -114,7 +116,7 @@ class OrderController extends Controller
             $query->where('seller_id', $user->id);
         })->with([
             'orderItems' => function ($query) use ($user) {
-                $query->where('seller_id', $user->id)->with(['food', 'prasmanan']);
+                $query->where('seller_id', $user->id)->with(['food']);
             },
             'user'
         ])->get();
@@ -140,7 +142,7 @@ class OrderController extends Controller
         }
 
         $orders = Order::where('user_id', $user->id)
-            ->with(['orderItems.food', 'orderItems.prasmanan', 'user'])
+            ->with(['orderItems.food', 'user'])
             ->get();
 
         return response()->json($orders);
@@ -161,7 +163,7 @@ class OrderController extends Controller
             'status' => 'required|in:pending,diantar,siap',
         ]);
 
-        $orderItem = OrderItem::with(['food', 'prasmanan', 'order'])->findOrFail($orderItemId);
+        $orderItem = OrderItem::with(['food', 'order'])->findOrFail($orderItemId);
 
         if ($orderItem->seller_id !== $user->id) {
             return response()->json(['error' => 'Unauthorized.'], 403);
@@ -180,7 +182,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Get seller's orders by pending status
+     * Get seller's pending orders
      */
     public function getOrdersByStatus()
     {
@@ -196,7 +198,7 @@ class OrderController extends Controller
             })
             ->with([
                 'orderItems' => function ($query) use ($user) {
-                    $query->where('seller_id', $user->id)->with(['food', 'prasmanan']);
+                    $query->where('seller_id', $user->id)->with(['food']);
                 },
                 'user'
             ])

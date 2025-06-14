@@ -13,7 +13,13 @@ class OrderItem extends Model
         'quantity',
         'price',
         'status',
+        'prasmanan_item_ids',
     ];
+
+    protected $casts = [
+    'prasmanan_item_ids' => 'array',
+];
+
 
     // Belongs to an order
     public function order(): BelongsTo
@@ -31,4 +37,9 @@ class OrderItem extends Model
     {
         return $this->belongsTo(User::class, 'seller_id');
     }
+    public function prasmananItems()
+{
+    return $this->belongsToMany(PrasmananItem::class, 'order_item_prasmanan_item');
+}
+
 }

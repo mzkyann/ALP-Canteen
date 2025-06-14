@@ -6,11 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-public function up(): void
+public function up()
 {
     Schema::table('orders', function (Blueprint $table) {
-        $table->enum('delivery_method', ['pickup', 'delivery'])->after('status');
-        $table->dateTime('scheduled_time')->nullable()->after('delivery_method');
+        if (!Schema::hasColumn('orders', 'delivery_method')) {
+            $table->enum('delivery_method', ['pickup', 'delivery'])->after('status');
+        }
+
+        if (!Schema::hasColumn('orders', 'scheduled_time')) {
+            $table->dateTime('scheduled_time')->nullable()->after('delivery_method');
+        }
     });
 }
 

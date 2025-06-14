@@ -27,4 +27,12 @@ class Food extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function prasmanans()
+{
+    return $this->belongsToMany(Prasmanan::class, 'food_prasmanan')
+        ->withPivot('quantity')
+        ->withTimestamps();
+}
+
+
 }

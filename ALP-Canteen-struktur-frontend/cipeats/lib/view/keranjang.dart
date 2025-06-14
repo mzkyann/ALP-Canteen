@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/cart_viewmodel.dart';
-import '../model/menu_item.dart';
+import '../widget/tab_bar_header.dart';
 
 class KeranjangPage extends ConsumerWidget {
   const KeranjangPage({super.key});
@@ -41,21 +41,13 @@ class KeranjangPage extends ConsumerWidget {
           ),
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(screenHeight * 0.05),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _tabItem('Status', false, screenWidth),
-                _tabItem('Keranjang', true, screenWidth),
-                _tabItem('Riwayat', false, screenWidth),
-              ],
-            ),
+            child: TabBarHeader(activeIndex: 1, onTabSelected: (index) {  },), // 1 untuk "Keranjang"
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Padding(
+      body: cartItems.isEmpty
+          ? const Center(child: Text("Keranjang kosong"))
+          : Padding(
               padding: EdgeInsets.only(bottom: screenHeight * 0.2),
               child: ListView.builder(
                 itemCount: cartItems.length,
@@ -78,98 +70,37 @@ class KeranjangPage extends ConsumerWidget {
                 },
               ),
             ),
-          ),
-          Positioned(
-            bottom: screenHeight * 0.12,
-            left: screenWidth * 0.04,
-            right: screenWidth * 0.04,
-            child: Container(
-              height: screenHeight * 0.06,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFF512F), Color(0xFFFD9644)],
-                ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Total', style: TextStyle(color: Colors.white)),
-                    Text(
-                      'Rp $total',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Total:", style: TextStyle(fontSize: 16)),
+                Text("Rp $total", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ],
             ),
           ),
-          Positioned(
-            bottom: screenHeight * 0.03,
-            left: screenWidth * 0.04,
-            right: screenWidth * 0.04,
-            child: SizedBox(
-              height: screenHeight * 0.055,
-              child: OutlinedButton(
-                onPressed: () {
-                  ref.read(cartProvider.notifier).clearCart();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Pesanan diproses")),
-                  );
-                },
-                child: const Text('Pesan', style: TextStyle(color: Colors.black)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ElevatedButton(
+              onPressed: () {
+                ref.read(cartProvider.notifier).clearCart();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Pesanan diproses")),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepOrange,
+                minimumSize: const Size.fromHeight(50),
               ),
+              child: const Text("Pesan"),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xFF2C2C2C),
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Navigator.pushNamed(context, '/home');
-              break;
-            case 1:
-              Navigator.pushNamed(context, '/pesanan');
-              break;
-            case 2:
-              Navigator.pushNamed(context, '/akun');
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_bag), label: 'Pesanan'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Akun'),
-        ],
-      ),
-    );
-  }
-
-  Widget _tabItem(String label, bool isSelected, double screenWidth) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: Colors.black,
-            fontSize: screenWidth * 0.035,
-          ),
-        ),
-        if (isSelected)
-          Container(
-            margin: const EdgeInsets.only(top: 4),
-            height: 2,
-            width: screenWidth * 0.15,
-            color: const Color(0xFFFFA726),
-          ),
-      ],
     );
   }
 }

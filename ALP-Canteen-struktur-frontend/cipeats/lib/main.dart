@@ -13,6 +13,9 @@ import 'view/pesanan.dart';
 import 'view/checkout.dart';
 import 'view/bayar.dart';
 import 'view/keranjang.dart';
+import 'view/status_page.dart';
+import 'view/history_page.dart';
+
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -43,6 +46,9 @@ class MyApp extends StatelessWidget {
         '/checkout': (context) => const CheckoutPage(),
         '/bayar': (context) => const BayarPage(),
         '/keranjang': (context) => const KeranjangPage(),
+        '/status': (context) => const StatusPage(),
+        '/riwayat': (context) => const HistoryPage(),
+
       },
     );
   }

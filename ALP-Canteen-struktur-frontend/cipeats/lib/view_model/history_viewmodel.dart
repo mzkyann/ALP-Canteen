@@ -16,15 +16,27 @@ class HistoryViewModel extends StateNotifier<List<HistoryItem>> {
     state = [
       HistoryItem(
         name: 'Nasi Goreng',
-        imageUrl: 'https://example.com/nasgor.jpg',
+        imageUrl: 'assets/images/Nasi_Goreng.png',
         price: 15000,
-        vendor: 'Kantin UC',
+        vendor: 'Warung AW',
+        vendorLogo: 'assets/images/WarungAw.png',
+        date: DateTime(2025, 4, 18),
       ),
       HistoryItem(
-        name: 'Mie Ayam',
-        imageUrl: 'https://example.com/mieayam.jpg',
+        name: 'Kentang Goreng',
+        imageUrl: 'assets/images/Kentang_Goreng.png',
         price: 13000,
-        vendor: 'Kantin A',
+        vendor: 'Warung AW',
+        vendorLogo: 'assets/images/WarungAw.png',
+        date: DateTime(2025, 4, 18),
+      ),
+      HistoryItem(
+        name: 'Nasi Goreng',
+        imageUrl: 'assets/images/Nasi_Goreng.png',
+        price: 15000,
+        vendor: 'Warung AW',
+        vendorLogo: 'assets/images/WarungAw.png',
+        date: DateTime(2025, 4, 13),
       ),
     ];
   }

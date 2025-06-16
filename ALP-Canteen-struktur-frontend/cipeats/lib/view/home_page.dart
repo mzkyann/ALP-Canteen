@@ -206,7 +206,7 @@ class HomePage extends ConsumerWidget {
                 Navigator.pushReplacementNamed(context, '/home');
                 break;
               case 1:
-                Navigator.pushReplacementNamed(context, '/keranjang');
+                Navigator.pushReplacementNamed(context, '/pesanan');
                 break;
               case 2:
                 Navigator.pushReplacementNamed(context, '/akun');

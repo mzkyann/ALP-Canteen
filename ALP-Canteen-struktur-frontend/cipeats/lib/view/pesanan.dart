@@ -1,36 +1,44 @@
+import 'package:cipeats/view/status_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../view_model/menu_view_model.dart';
-import '../model/menu_item.dart';
+import 'keranjang.dart';
+import 'riwayat.dart';
+import 'status.dart';
 
-class PesananPage extends ConsumerWidget {
+class PesananPage extends ConsumerStatefulWidget {
   const PesananPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final menuList = ref.watch(menuProvider);
+  ConsumerState<PesananPage> createState() => _PesananPageState();
+}
 
-    Widget getImage(String imageUrl) {
-      if (imageUrl.startsWith('assets/')) {
-        return Image.asset(
-          imageUrl,
-          height: 100,
-          width: double.infinity,
-          fit: BoxFit.cover,
-        );
-      } else {
-        return Image.network(
-          imageUrl,
-          height: 100,
-          width: double.infinity,
-          fit: BoxFit.cover,
-        );
-      }
-    }
+class _PesananPageState extends ConsumerState<PesananPage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
+  final List<Tab> _tabs = const [
+    Tab(text: 'Status'),
+    Tab(text: 'Keranjang'),
+    Tab(text: 'Riwayat'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _tabs.length, vsync: this, initialIndex: 1);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 250, 250, 250),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: 70,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -46,12 +54,26 @@ class PesananPage extends ConsumerWidget {
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            color: Colors.white,
+            child: TabBar(
+              controller: _tabController,
+              tabs: _tabs,
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.black54,
+              indicatorColor: Colors.orange,
+              indicatorWeight: 3,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
       ),
- 
-        bottomNavigationBar: SizedBox(
+      bottomNavigationBar: SizedBox(
         height: 70,
         child: BottomNavigationBar(
-          currentIndex: 2, // Set this dynamically based on current page
+          currentIndex: 1,
           backgroundColor: const Color.fromARGB(255, 54, 54, 54),
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.white,
@@ -63,7 +85,7 @@ class PesananPage extends ConsumerWidget {
                 Navigator.pushReplacementNamed(context, '/home');
                 break;
               case 1:
-                Navigator.pushReplacementNamed(context, '/pesanan');
+                // Already here
                 break;
               case 2:
                 Navigator.pushReplacementNamed(context, '/akun');
@@ -76,6 +98,14 @@ class PesananPage extends ConsumerWidget {
             BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: "Akun"),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: const [
+          StatusPage(),     // Belum dibuat? Bisa pakai placeholder dulu
+          KeranjangPage(),  // Sudah kamu minta sebelumnya
+          RiwayatPage(),    // Diambil dari riwayat.dart yang sudah kamu refactor
+        ],
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/cart_viewmodel.dart';
-import '../widget/tab_bar_header.dart';
+import '../model/cart_model.dart';
 
 class KeranjangPage extends ConsumerWidget {
   const KeranjangPage({super.key});
@@ -9,97 +9,198 @@ class KeranjangPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cartItems = ref.watch(cartProvider);
-    final total = ref.watch(totalPriceProvider);
-
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final totalPrice = ref.watch(totalPriceProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(screenHeight * 0.15),
-        child: AppBar(
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(
-            padding: EdgeInsets.only(top: screenHeight * 0.05, left: screenWidth * 0.05),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFFF512F), Color(0xFFFD9644)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Activity',
-              style: TextStyle(
-                fontSize: screenWidth * 0.05,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(screenHeight * 0.05),
-            child: TabBarHeader(activeIndex: 1, onTabSelected: (index) {  },), // 1 untuk "Keranjang"
-          ),
-        ),
-      ),
+      backgroundColor: const Color.fromARGB(255, 250, 250, 250),
       body: cartItems.isEmpty
-          ? const Center(child: Text("Keranjang kosong"))
-          : Padding(
-              padding: EdgeInsets.only(bottom: screenHeight * 0.2),
-              child: ListView.builder(
-                itemCount: cartItems.length,
-                itemBuilder: (context, index) {
-                  final item = cartItems[index];
-                  return ListTile(
-                    leading: Image.network(
-                      item.imageUrl,
-                      width: screenWidth * 0.12,
-                      height: screenWidth * 0.12,
-                      fit: BoxFit.cover,
-                    ),
-                    title: Text(item.name),
-                    subtitle: Text('Rp ${item.price}'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => ref.read(cartProvider.notifier).removeFromCart(item),
-                    ),
-                  );
-                },
-              ),
-            ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ? const Center(child: Text("Keranjang kamu kosong."))
+          : Column(
               children: [
-                const Text("Total:", style: TextStyle(fontSize: 16)),
-                Text("Rp $total", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    itemCount: cartItems.length,
+                    itemBuilder: (context, index) {
+                      final item = cartItems[index];
+                      return _buildCartItem(context, ref, item);
+                    },
+                  ),
+                ),
+
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Colors.deepOrange, Colors.orange],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Total",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "Rp$totalPrice,00",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20), 
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Pesanan diproses")),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.black),
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        "Pesan",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildCartItem(BuildContext context, WidgetRef ref, CartModel item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.black.withOpacity(0.1)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              item.imageUrl,
+              width: 70,
+              height: 70,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Rp${item.price},00",
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.black, // ← hitam
+                  ),
+                ),
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ElevatedButton(
-              onPressed: () {
-                ref.read(cartProvider.notifier).clearCart();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Pesanan diproses")),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepOrange,
-                minimumSize: const Size.fromHeight(50),
+          Row(
+            children: [
+              _qtyButton(
+                icon: Icons.remove,
+                onPressed: () {
+                  if (item.quantity <= 1) {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text("Hapus item?"),
+                        content: const Text("Apakah kamu yakin ingin menghapus item ini dari keranjang?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text("Batal"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              ref.read(cartProvider.notifier).removeItem(item.id);
+                              Navigator.pop(ctx);
+                            },
+                            child: const Text("Hapus"),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    ref.read(cartProvider.notifier).decreaseQuantity(item.id);
+                  }
+                },
               ),
-              child: const Text("Pesan"),
-            ),
-          ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  item.quantity.toString(),
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+              _qtyButton(
+                icon: Icons.add,
+                onPressed: () {
+                  ref.read(cartProvider.notifier).increaseQuantity(item.id);
+                },
+              ),
+            ],
+          )
         ],
+      ),
+    );
+  }
+
+  Widget _qtyButton({required IconData icon, required VoidCallback onPressed}) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: InkWell(
+        onTap: onPressed,
+        child: Icon(icon, size: 16),
       ),
     );
   }

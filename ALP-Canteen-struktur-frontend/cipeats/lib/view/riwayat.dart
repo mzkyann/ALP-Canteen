@@ -4,115 +4,8 @@ import 'package:intl/intl.dart';
 import '../view_model/history_viewmodel.dart';
 import '../model/history_item.dart';
 
-class RiwayatPage extends ConsumerStatefulWidget {
+class RiwayatPage extends ConsumerWidget {
   const RiwayatPage({super.key});
-
-  @override
-  ConsumerState<RiwayatPage> createState() => _RiwayatPageState();
-}
-
-class _RiwayatPageState extends ConsumerState<RiwayatPage> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  final List<Tab> _tabs = const [
-    Tab(text: 'Status'),
-    Tab(text: 'Keranjang'),
-    Tab(text: 'Riwayat'),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: _tabs.length, vsync: this, initialIndex: 2);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 250, 250, 250),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 70,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.orange, Colors.deepOrange],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        title: const Text(
-          'Pesanan',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
-          child: Container(
-            color: Colors.white,
-            child: TabBar(
-              controller: _tabController,
-              tabs: _tabs,
-              labelColor: Colors.black,
-              unselectedLabelColor: Colors.black54,
-              indicatorColor: Colors.orange,
-              indicatorWeight: 3,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: SizedBox(
-        height: 70,
-        child: BottomNavigationBar(
-          currentIndex: 1,
-          backgroundColor: const Color.fromARGB(255, 54, 54, 54),
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.white,
-          selectedIconTheme: const IconThemeData(size: 30),
-          unselectedIconTheme: const IconThemeData(size: 26),
-          onTap: (index) {
-            switch (index) {
-              case 0:
-                Navigator.pushReplacementNamed(context, '/home');
-                break;
-              case 1:
-                Navigator.pushReplacementNamed(context, '/pesanan');
-                break;
-              case 2:
-                Navigator.pushReplacementNamed(context, '/akun');
-                break;
-            }
-          },
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "Beranda"),
-            BottomNavigationBarItem(icon: Icon(Icons.fastfood), label: "Pesanan"),
-            BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: "Akun"),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          Center(child: Text("Halaman Status")), // Ganti sesuai kebutuhanmu
-          Center(child: Text("Halaman Keranjang")),
-          RiwayatTabView(), // Tab Riwayat detail
-        ],
-      ),
-    );
-  }
-}
-
-
-class RiwayatTabView extends ConsumerWidget {
-  const RiwayatTabView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -231,8 +124,7 @@ class _OrderCard extends StatelessWidget {
               onPressed: () {},
               style: TextButton.styleFrom(
                 side: const BorderSide(color: Colors.black),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6),
                 ),

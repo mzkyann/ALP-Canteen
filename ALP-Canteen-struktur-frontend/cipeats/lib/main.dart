@@ -1,6 +1,7 @@
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'view/splash_screen.dart';
 import 'view/loginPage.dart';
 import 'view/register_page.dart';
@@ -19,12 +20,25 @@ import 'view/prasmanan_page.dart';
 import 'package:cipeats/view/riwayat.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+import 'utils/cache_helper.dart';
 
-Future<void> main() async {
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('id_ID', null);
 
-  runApp(const ProviderScope(child: MyApp()));
+  // Inisialisasi cache
+  await CacheHelper.init();
+
+  // Inisialisasi Sentry
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = 'https://yourPublicKey@o0.ingest.sentry.io/yourProjectId'; // Ganti DSN ini
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(
+      const ProviderScope(child: MyApp()),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

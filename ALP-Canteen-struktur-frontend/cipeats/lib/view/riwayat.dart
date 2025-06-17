@@ -103,7 +103,7 @@ class _OrderCard extends StatelessWidget {
                           height: 30,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.storefront, size: 14, color: Colors.black54),
+                              const Icon(Icons.storefront, size: 14, color: Color.fromARGB(255, 114, 114, 114),),
                         )
                       else
                         const Icon(Icons.storefront, size: 14, color: Colors.black54),

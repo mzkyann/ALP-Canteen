@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/checkout_item_model.dart';
-import '../checkout_view_model.dart';
+import '../view_model/checkout_view_model.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 
 class CheckoutPage extends ConsumerWidget {
@@ -289,7 +289,6 @@ class CheckoutPage extends ConsumerWidget {
 
             const SizedBox(height: 16),
 
-            // Catatan opsional
             const Text('Tulis Catatan (opsional)'),
             TextField(
               maxLines: 3,
@@ -302,7 +301,6 @@ class CheckoutPage extends ConsumerWidget {
 
             const SizedBox(height: 32),
 
-            // Box Biaya Admin & Total Pembayaran
             Center(
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.9,
@@ -326,7 +324,6 @@ class CheckoutPage extends ConsumerWidget {
 
             const SizedBox(height: 32),
 
-            // Tombol Beli
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),

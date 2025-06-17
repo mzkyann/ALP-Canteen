@@ -4,6 +4,8 @@ class CartModel {
   final int quantity;
   final int price;
   final String imageUrl;
+  final String vendorImage; 
+  final String vendorName; 
 
   CartModel({
     required this.id,
@@ -11,6 +13,8 @@ class CartModel {
     required this.quantity,
     required this.price,
     required this.imageUrl,
+    required this.vendorImage,
+    required this.vendorName,
   });
 
   CartModel copyWith({
@@ -19,6 +23,8 @@ class CartModel {
     int? quantity,
     int? price,
     String? imageUrl,
+    String? vendorImage,
+    String? vendorName,
   }) {
     return CartModel(
       id: id ?? this.id,
@@ -26,6 +32,8 @@ class CartModel {
       quantity: quantity ?? this.quantity,
       price: price ?? this.price,
       imageUrl: imageUrl ?? this.imageUrl,
+      vendorImage: vendorImage ?? this.vendorImage,
+      vendorName: vendorName ?? this.vendorName,
     );
   }
 
@@ -36,6 +44,20 @@ class CartModel {
       quantity: json['quantity'],
       price: json['price'],
       imageUrl: json['imageUrl'],
+      vendorImage: json['vendorImage'],
+      vendorName: json['vendorName'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'quantity': quantity,
+      'price': price,
+      'imageUrl': imageUrl,
+      'vendorImage': vendorImage,
+      'vendorName': vendorName,
+    };
   }
 }

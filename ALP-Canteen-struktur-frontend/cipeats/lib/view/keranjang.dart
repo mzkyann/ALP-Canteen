@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/cart_viewmodel.dart';
 import '../model/cart_model.dart';
@@ -10,6 +11,7 @@ class KeranjangPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cartItems = ref.watch(cartProvider);
     final totalPrice = ref.watch(totalPriceProvider);
+    final currencyFormatter = NumberFormat.decimalPattern('id');
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 250, 250, 250),
@@ -27,7 +29,6 @@ class KeranjangPage extends ConsumerWidget {
                     },
                   ),
                 ),
-
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -49,7 +50,7 @@ class KeranjangPage extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        "Rp$totalPrice,00",
+                        "Rp${currencyFormatter.format(totalPrice)},00",
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -59,9 +60,7 @@ class KeranjangPage extends ConsumerWidget {
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 20), 
-
+                const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: SizedBox(
@@ -130,11 +129,36 @@ class KeranjangPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Rp${item.price},00",
+                  "Rp${NumberFormat.decimalPattern('id').format(item.price)},00",
                   style: const TextStyle(
                     fontSize: 13,
-                    color: Colors.black, // ← hitam
+                    color: Colors.black,
                   ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    ClipOval(
+                      child: Image.asset(
+                        item.vendorImage,
+                        width: 30,
+                        height: 30,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        item.vendorName,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Color.fromARGB(255, 114, 114, 114),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -148,18 +172,22 @@ class KeranjangPage extends ConsumerWidget {
                     showDialog(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        title: const Text("Hapus item?"),
-                        content: const Text("Apakah kamu yakin ingin menghapus item ini dari keranjang?"),
+                        title: const Text("Hapus Item"),
+                        content: const Text("Yakin ingin menghapus item ini dari keranjang?"),
                         actions: [
                           TextButton(
-                            onPressed: () => Navigator.pop(ctx),
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            style: TextButton.styleFrom(foregroundColor: Colors.red),
                             child: const Text("Batal"),
                           ),
                           TextButton(
                             onPressed: () {
                               ref.read(cartProvider.notifier).removeItem(item.id);
-                              Navigator.pop(ctx);
+                              Navigator.of(ctx).pop();
                             },
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color.fromARGB(221, 62, 62, 62),
+                            ),
                             child: const Text("Hapus"),
                           ),
                         ],

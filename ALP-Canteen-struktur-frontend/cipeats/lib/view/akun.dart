@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../user_view_model.dart';
+import '../view_model/user_view_model.dart';
 
 class AkunPage extends ConsumerStatefulWidget {
   const AkunPage({super.key});

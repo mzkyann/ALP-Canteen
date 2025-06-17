@@ -1,6 +1,6 @@
 class HistoryItem {
   final String? name;
-  final String? imageUrl;
+    final String? imageUrl;
   final int? price;
   final String? vendor;
   final String? vendorLogo;

@@ -15,6 +15,7 @@ import 'view/bayar.dart';
 import 'view/keranjang.dart';
 import 'view/status_page.dart';
 import 'view/history_page.dart';
+import 'view/prasmanan_page.dart';
 import 'package:cipeats/view/riwayat.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
         '/keranjang': (context) => const KeranjangPage(),
         '/status': (context) => const StatusPage(),
         '/riwayat': (context) => const RiwayatPage(),
+        '/prasmanan': (context) => const PrasmananPage(),
 
       },
     );

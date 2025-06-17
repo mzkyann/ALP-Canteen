@@ -124,7 +124,7 @@ class _OrderCard extends StatelessWidget {
               onPressed: () {},
               style: TextButton.styleFrom(
                 side: const BorderSide(color: Colors.black),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6),
                 ),

@@ -110,7 +110,7 @@ class KeranjangPage extends ConsumerWidget {
             borderRadius: BorderRadius.circular(8),
             child: Image.asset(
               item.imageUrl,
-              width: 70,
+              width: 90,
               height: 70,
               fit: BoxFit.cover,
             ),

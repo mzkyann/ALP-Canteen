@@ -14,6 +14,7 @@ import 'view/pesanan.dart';
 import 'view/checkout.dart';
 import 'view/bayar.dart';
 import 'view/keranjang.dart';
+import 'view/status.dart';
 import 'view/status_page.dart';
 import 'view/history_page.dart';
 import 'view/prasmanan_page.dart';
@@ -28,6 +29,9 @@ void main() async {
 
   // Inisialisasi cache
   await CacheHelper.init();
+
+  // Inisialisasi date formatting (UNTUK LOCALE "id")
+  await initializeDateFormatting('id', null); // Tambahkan ini
 
   // Inisialisasi Sentry
   await SentryFlutter.init(

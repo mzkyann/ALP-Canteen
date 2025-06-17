@@ -12,6 +12,8 @@ class CartViewModel extends StateNotifier<List<CartModel>> {
       quantity: 2,
       price: 18000,
       imageUrl: "assets/images/Nasi_Goreng.png",
+      vendorImage: 'assets/images/ChickonCup.png',
+      vendorName: 'Chick On Cup',
     ),
     CartModel(
       id: 2,
@@ -19,6 +21,8 @@ class CartViewModel extends StateNotifier<List<CartModel>> {
       quantity: 1,
       price: 15000,
       imageUrl: "assets/images/Mie_Kanton.png",
+      vendorImage: 'assets/images/ChickonCup.png',
+      vendorName: 'Chick On Cup',
     ),
   ];
 

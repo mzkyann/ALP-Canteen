@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import '../model/checkout_item_model.dart';
-import '../view/checkout.dart';
+import '../../model/checkout_item_model.dart';
+import '../../view/checkout.dart';
 
 enum DeliveryMethod { pickup, delivered }
 enum DeliveryTime { now, scheduled }

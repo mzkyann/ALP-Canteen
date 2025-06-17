@@ -1,16 +1,17 @@
 # ADR 008 - Offline Support & Caching
 
 ## Status
+
 ### Accepted
 
-## Context 
-### Aplikasi kami digunakan oleh mahasiswa dengan kondisi jaringan yang kadang tidak stabil. Namun, karena data yang ditampilkan—seperti daftar makanan dari vendor yang bersifat sangat dinamis dan berubah setiap hari, maka data lama berisiko membuat pengguna salah informasi. Oleh karena itu, aplikasi harus memastikan bahwa data yang ditampilkan selalu terkini. Jika tidak ada koneksi internet, aplikasi tidak akan dapat digunakan secara penuh, demi menghindari penggunaan data kadaluarsa.
+## Context
+
+### Aplikasi kami digunakan oleh mahasiswa di lingkungan kampus, di mana koneksi internet tidak selalu stabil. Namun, karena data seperti daftar makanan dan status pesanan sangat dinamis dan berubah setiap hari, penggunaan data lama sangat berisiko menyebabkan kesalahan informasi. Oleh karena itu, kami memprioritaskan agar data yang ditampilkan kepada pengguna selalu yang paling baru dan valid. Dalam kondisi tanpa koneksi internet, aplikasi akan membatasi fungsionalitas dan tidak menampilkan data agar menghindari menampilkan informasi yang sudah tidak relevan.
 
 ## Decision
-### Kami memutuskan untuk menggunakan pendekatan local-first dengan menyimpan data penting secara lokal menggunakan SQLite. Aplikasi akan menampilkan data langsung dari database lokal terlebih dahulu untuk menjaga kecepatan dan responsivitas, kemudian menyinkronkan data dengan server ketika koneksi tersedia. Pendekatan ini dipilih karena memberikan kontrol penuh atas struktur data lokal, cocok untuk data relasional, dan efisien digunakan dalam kondisi internet yang tidak selalu stabil, seperti di kantin atau kampus UC. SQLite juga sudah umum digunakan dan didukung dengan baik di Flutter.
 
-## Alternative
-### Kami mempertimbangkan penggunaan HTTP, namun pendekatan ini tidak menjamin data tersedia saat offline tanpa tambahan logika di sisi klien, serta tidak cukup fleksibel untuk kebutuhan kompleks seperti relasi antar data. Kami juga mempertimbangkan membangun layer caching khusus di atas API, namun pendekatan ini memerlukan arsitektur dan effort tambahan yang tidak sebanding dengan kebutuhan dan skala aplikasi saat ini.
+### Kami memutuskan untuk menggunakan pendekatan **online-first**, yaitu aplikasi akan selalu mencoba mengambil data langsung dari server setiap kali dibuka atau diakses. Jika koneksi internet tersedia, data terbaru akan ditampilkan kepada pengguna. Namun, jika tidak ada koneksi internet, maka aplikasi akan menampilkan informasi bahwa data tidak tersedia dan pengguna diminta untuk menghubungkan perangkat ke internet. Pendekatan ini dipilih karena menjamin bahwa semua data yang ditampilkan bersifat real-time dan tidak usang, yang sangat penting dalam konteks pemesanan makanan yang cepat berubah.
 
 ## Consequence
-### Dengan menggunakan local-first approach, aplikasi menjadi lebih responsif dan tetap bisa digunakan saat offline karena data dibaca langsung dari database lokal yaitu SQLite. Namun, pendekatan ini menambah kompleksitas, terutama dalam hal sinkronisasi data antara lokal dan server, penanganan konflik, serta memastikan data tetap valid dan konsisten. Meski membutuhkan logika tambahan, pendekatan ini sebanding dengan peningkatan pengalaman pengguna, terutama dalam kondisi internet yang tidak stabil.
+
+### Dengan pendekatan online-first, aplikasi selalu menampilkan data terbaru yang diambil langsung dari server, sehingga menghindari risiko kesalahan informasi. Namun, pengguna tidak dapat mengakses fitur utama saat tidak terhubung ke internet, yang berarti aplikasi akan memberikan notifikasi atau tampilan fallback untuk kondisi offline. Pendekatan ini mengurangi kompleksitas pada sisi klien karena tidak memerlukan sinkronisasi data lokal, namun mengandalkan ketersediaan dan kestabilan koneksi internet untuk pengalaman pengguna yang optimal.

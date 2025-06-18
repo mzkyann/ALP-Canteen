@@ -13,21 +13,29 @@ class FoodController extends Controller
 {
     public function __construct()
     {
-        // Middleware for authentication
-        $this->middleware('auth:sanctum');
-
-        // Middleware to check if the logged-in user is a seller
+        $this->middleware('auth:sanctum')->except(['show', 'publicFoods']);
         $this->middleware(function ($request, $next) {
             $this->authorizeSeller();
             return $next($request);
-        });
+        })->except(['show', 'publicFoods']);
+
     }
+
 
     protected function authorizeSeller()
     {
-        // Ensure the user is a seller
-        abort_unless(Auth::user()->role === 'seller', 403, 'Only sellers can access this.');
+        \Log::info('authorizeSeller triggered by user: ' . optional(Auth::user())->id);
+
+        abort_unless(Auth::user()?->role === 'seller', 403, 'Only sellers can access this.');
     }
+
+
+    public function publicFoods()
+    {
+        // Return all foods where availability is true
+        return Food::with('user')->where('availability', true)->get();
+    }
+
 
     public function index()
     {
@@ -54,19 +62,28 @@ class FoodController extends Controller
         $data['user_id'] = Auth::id();  // Associate food with the logged-in seller
 
         // Create the food item and return the response
-        return Food::create($data);
+        // return Food::create($data);
+        return response()->json([
+            'message' => 'Food updated successfully',
+            'food' => Food::create($data),
+       
+        ]);
     }
 
     public function show(Food $food)
     {
-        // Ensure the food belongs to the logged-in seller
-        abort_unless($food->user_id === Auth::id(), 403);
+        $user = Auth::user(); // Might be null if guest
 
-        // Load related user
+        if ($user && $user->role !== 'customer' && $user->id !== $food->user_id) {
+            abort(403, 'You are not allowed to view this food item.');
+        }
+
         $food->load('user');
 
         return $food;
     }
+
+
 
     public function update(Request $request, $id)
     {
@@ -78,7 +95,7 @@ class FoodController extends Controller
 
         // Define validation rules with optional fields
         $validator = Validator::make($request->all(), [
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // image is optional
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // image is optional
             'name' => 'nullable|string|max:255', // name is optional
             'description' => 'nullable|string', // description is optional
             'price' => 'nullable|numeric', // price is optional
@@ -111,24 +128,30 @@ class FoodController extends Controller
         }
 
         // Handle image upload
-        if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($food->image) {
-                Storage::disk('public')->delete('food_images/' . basename($food->image));
-            }
+if ($request->hasFile('image')) {
+    \Log::info('✅ Image file detected');
 
-            // Upload new image
-            $image = $request->file('image');
-            $imageName = $image->store('food_images', 'public');
-            $data['image'] = $imageName;
-        }
+    if ($food->image && Storage::disk('public')->exists($food->image)) {
+        Storage::disk('public')->delete($food->image);
+    }
+
+    $image = $request->file('image');
+    $imagePath = $image->store('food_images', 'public');
+    $data['image'] = $imagePath;
+
+    \Log::info('📦 Stored new image path: ' . $imagePath);
+} else {
+    \Log::warning('❌ No image file found in request');
+}
+
 
         // Update the food item
         $food->update($data);
 
         return response()->json([
             'message' => 'Food updated successfully',
-            'food' => $food
+            'food' => $food,
+           
         ]);
     }
 

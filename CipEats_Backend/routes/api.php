@@ -54,10 +54,13 @@ Route::prefix('v1')->group(function () {
             return response()->json(['message' => 'Verification email sent']);
         })->middleware('throttle:6,1')->name('verification.send');
 
+        Route::get('/foods/public', [FoodController::class, 'publicFoods']);
+
 
         
         // Cart and Seller routes remain as is...
         Route::get('/cart', [CartController::class, 'index']);
+       
         Route::post('/cart', [CartController::class, 'add']);
         Route::put('/cart/{id}', [CartController::class, 'update']);
         Route::delete('/cart/{id}', [CartController::class, 'remove']);
@@ -89,7 +92,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/prasmanan-items/{id}', [PrasmananItemController::class, 'update']);
             Route::delete('/prasmanan-items/{id}', [PrasmananItemController::class, 'destroy']);
 
-            Route::get('/prasmanans', [PrasmanaItemController::class, 'index']);
+            Route::get('/prasmanans', [PrasmananItemController::class, 'index']);
             Route::post('/prasmanans', [PrasmananItemController::class, 'store']);
             Route::delete('/prasmanans/{id}', [PrasmananItemController::class, 'destroy']);
         });

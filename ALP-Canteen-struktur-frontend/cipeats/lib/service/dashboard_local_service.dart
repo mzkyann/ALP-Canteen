@@ -7,13 +7,14 @@ class DashboardLocalService {
 
   Map<String, dynamic> getDashboardData() {
     final totalMenu = menuList.length;
-    final totalVendor = menuList.map((e) => e.vendor).toSet().length;
-    final menuTersedia = menuList.where((e) => e.available).length;
+    final totalVendor = menuList.map((e) => e.user.id).toSet().length;
+    final menuTersedia = menuList.where((e) => e.availability).length;
     final menuTermahal = menuList.reduce((a, b) => a.price > b.price ? a : b);
 
     final menuPerVendor = <String, int>{};
     for (var item in menuList) {
-      menuPerVendor[item.vendor] = (menuPerVendor[item.vendor] ?? 0) + 1;
+      final vendorName = item.user.name;
+      menuPerVendor[vendorName] = (menuPerVendor[vendorName] ?? 0) + 1;
     }
 
     return {

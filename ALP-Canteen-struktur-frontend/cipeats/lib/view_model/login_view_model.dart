@@ -1,14 +1,19 @@
+// lib/view_model/login_view_model.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/login_model.dart';
-import '../service/auth_service.dart';
 import '../model/user_model.dart';
 import '../service/auth_service_wrapper.dart';
+import '../provider/secure_storage_provider.dart';
 
 class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
   final AuthServiceWrapper authService;
+  final Ref ref;
 
-  LoginViewModelNotifier({required this.authService}) : super(LoginViewModel());
+  LoginViewModelNotifier({
+    required this.authService,
+    required this.ref,
+  }) : super(LoginViewModel());
 
   void setEmail(String email) {
     state = state.copyWith(email: email, errorMessage: null);
@@ -31,7 +36,6 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
       state = state.copyWith(errorMessage: "Email and password cannot be empty.");
       return;
     }
-
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
@@ -41,15 +45,15 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
       );
 
       if (result['success']) {
-        final UserModel user = result['user'];
         final String token = result['token'];
-        final bool isVerifiedSeller = result['isVerifiedSeller'];
 
-        // Optionally save the user/token if needed
-        print('User: ${user.fullName}, Token: $token, Verified: $isVerifiedSeller');
+// after successful login
+await ref.read(secureStorageProvider).saveToken(token);
+
+
 
         state = state.copyWith(isLoading: false);
-        Navigator.pushReplacementNamed(context, '/');
+        Navigator.pushReplacementNamed(context, '/home');
       } else {
         state = state.copyWith(
           isLoading: false,
@@ -65,6 +69,9 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
   }
 }
 
-final loginViewModelProvider =
-    StateNotifierProvider<LoginViewModelNotifier, LoginViewModel>(
-        (ref) => LoginViewModelNotifier(authService: AuthServiceWrapper()));
+final loginViewModelProvider = StateNotifierProvider<LoginViewModelNotifier, LoginViewModel>(
+  (ref) => LoginViewModelNotifier(
+    authService: AuthServiceWrapper(),
+    ref: ref,
+  ),
+);

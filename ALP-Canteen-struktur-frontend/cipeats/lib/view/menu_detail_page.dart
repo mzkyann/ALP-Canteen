@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../view_model/menu_detail_view_model.dart';
 import '../model/menu_item.dart';
 
 class MenuDetailPage extends ConsumerWidget {
-  final int index;
-
-  const MenuDetailPage({this.index = 0, super.key});
+  const MenuDetailPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final menuList = ref.watch(menuDetailProvider);
-    final item = menuList[index];
+    final MenuItem item = ModalRoute.of(context)!.settings.arguments as MenuItem;
 
     final TextEditingController catatanController = TextEditingController();
     final screenWidth = MediaQuery.of(context).size.width;
@@ -49,14 +45,14 @@ class MenuDetailPage extends ConsumerWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
+                    child: Image.network(
                       item.imageUrl,
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: screenWidth * 0.5,
                     ),
                   ),
-                  if (item.available)
+                  if (item.availability)
                     Positioned(
                       right: 10,
                       top: 10,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../model/user_model.dart';
 
 class RegisterViewModel extends ChangeNotifier {
-  UserModel _user = UserModel();
+  UserModel _user = UserModel.empty();
 
   UserModel get user => _user;
 
@@ -12,17 +12,17 @@ class RegisterViewModel extends ChangeNotifier {
   }
 
   void setPassword(String password) {
-    _user = _user.copyWith(password: password);
+    // Note: password isn't part of UserModel. You may want to store it separately
+    // Or modify UserModel to include it.
     notifyListeners();
   }
 
   void setFullName(String fullName) {
-    _user = _user.copyWith(fullName: fullName);
+    _user = _user.copyWith(name: fullName);
     notifyListeners();
   }
 
   void submit() {
-    // Contoh kirim ke backend / cetak ke konsol
     print(_user.toJson());
   }
 }

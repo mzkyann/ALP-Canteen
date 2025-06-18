@@ -1,99 +1,55 @@
+// lib/service/menu_service.dart
+
 import 'dart:convert';
+import 'dart:developer' as developer;
+import 'package:cipeats/service/secure_storage_service.dart';
+import '../service/secure_storage_service.dart';
 import 'package:http/http.dart' as http;
 import '../model/menu_item.dart';
 
+
 class MenuService {
-  final String baseUrl = "http://10.0.2.2:8000/api";
+  // Secure storage instance to read the token
+  final SecureStorageService _storage;
+  
+  // Add constructor
+  MenuService({SecureStorageService? storage}) 
+      : _storage = storage ?? SecureStorageService();
 
-  Future<List<MenuItem>> fetchAllMenuItems() async {
-    final response = await http.get(Uri.parse("$baseUrl/menu_items"));
+  Future<List<MenuItem>> fetchAvailableFoods() async {
+    final url = Uri.parse('http://127.0.0.1:8000/api/v1/foods/public');
+    developer.log("📡 Calling API: $url", name: 'MenuService');
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => MenuItem.fromJson(json)).toList();
-    } else {
-      throw Exception("Gagal mengambil semua menu");
+    // Read the token from secure storage
+    final token = await _storage.read(key: 'token');
+    developer.log("🔑 Using token: ${token ?? "<none>"}", name: 'MenuService');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': token != null ? 'Bearer $token' : '',
+          'Accept': 'application/json',
+        },
+      );
+
+      developer.log("✅ Status: ${response.statusCode}", name: 'MenuService');
+      developer.log("📦 Body: ${response.body}", name: 'MenuService');
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+
+        final List data = decoded is List
+            ? decoded
+            : (decoded['foods'] ?? decoded['data'] ?? []);
+
+        return data.map((json) => MenuItem.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to fetch available foods: ${response.statusCode}');
+      }
+    } catch (e) {
+      developer.log("🔥 Exception: $e", name: 'MenuService', level: 1000);
+      rethrow;
     }
-  }
-
-  Future<List<MenuItem>> fetchVendorMenu(String vendorName) async {
-    final response = await http.get(Uri.parse("$baseUrl/menu_items?vendor=$vendorName"));
-
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((json) => MenuItem.fromJson(json)).toList();
-    } else {
-      throw Exception("Gagal mengambil menu vendor $vendorName");
-    }
-  }
-
-  Future<List<MenuItem>> fetchMenu() async {
-    await Future.delayed(const Duration(seconds: 1)); // simulasi fetch
-    return [
-      MenuItem(
-        name: 'Ayam Popcorn',
-        imageUrl: 'https://i.imgur.com/WvEu0Sb.jpeg',
-        price: 6000,
-        available: true,
-        description: 'Ayam goreng tepung krispi',
-        vendor: 'Vendor A',
-      ),
-      MenuItem(
-        name: 'Pallumara Ikan Bolu',
-        imageUrl: 'https://i.imgur.com/Y2o5Dyk.jpeg',
-        price: 6000,
-        available: true,
-        description: 'Sup asam khas Bugis Makassar',
-        vendor: 'Vendor A',
-      ),
-      MenuItem(
-        name: 'Ayam Bumbu Bali',
-        imageUrl: 'https://i.imgur.com/7VcmkFh.jpeg',
-        price: 6000,
-        available: true,
-        description: 'Ayam dengan bumbu khas Bali',
-        vendor: 'Vendor A',
-      ),
-      MenuItem(
-        name: 'Bakwan Sayur',
-        imageUrl: 'https://i.imgur.com/CeOS02p.jpeg',
-        price: 1500,
-        available: true,
-        description: 'Gorengan sayur renyah',
-        vendor: 'Vendor A',
-      ),
-      MenuItem(
-        name: 'Perkedel Jagung',
-        imageUrl: 'https://i.imgur.com/kw7RRG3.jpeg',
-        price: 1000,
-        available: true,
-        description: 'Jagung pipil goreng',
-        vendor: 'Vendor A',
-      ),
-      MenuItem(
-        name: 'Tempe',
-        imageUrl: 'https://i.imgur.com/FYkBh3B.jpeg',
-        price: 1000,
-        available: true,
-        description: 'Tempe goreng',
-        vendor: 'Vendor A',
-      ),
-      MenuItem(
-        name: 'Ayam Taichan',
-        imageUrl: 'https://i.imgur.com/yF4L6Vy.jpeg',
-        price: 12000,
-        available: true,
-        description: 'Ayam panggang sambal pedas',
-        vendor: 'Vendor B',
-      ),
-      MenuItem(
-        name: 'Ayam Chili Padi',
-        imageUrl: 'https://i.imgur.com/s9xtQd6.jpeg',
-        price: 12000,
-        available: true,
-        description: 'Ayam pedas khas Malaysia',
-        vendor: 'Vendor B',
-      ),
-    ];
   }
 }

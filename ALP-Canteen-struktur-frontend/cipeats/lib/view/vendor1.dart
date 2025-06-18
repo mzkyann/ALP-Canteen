@@ -1,8 +1,9 @@
-import 'package:cipeats/model/menu_item.dart';
+// lib/pages/vendor1_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../view_model/vendor_menu_view_model.dart';
-import '../view_model/menu_detail_view_model.dart';
+import '../model/menu_item.dart';
+import '../provider/vendor_menu_provider.dart';
+import '../provider/menu_detail_provider.dart';
 import 'menu_detail_page.dart';
 
 class Vendor1Page extends ConsumerWidget {
@@ -10,7 +11,7 @@ class Vendor1Page extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final menuItems = ref.watch(vendorMenuProvider);
+    final menuItems = ref.watch(vendorMenuProvider(1));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -45,8 +46,6 @@ class Vendor1Page extends ConsumerWidget {
                 ),
                 const Divider(thickness: 2),
                 const SizedBox(height: 10),
-
-                // Grid Menu
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -60,10 +59,9 @@ class Vendor1Page extends ConsumerWidget {
                       ),
                       itemBuilder: (context, index) {
                         final item = menuItems[index];
-
                         return GestureDetector(
                           onTap: () {
-                            ref.read(menuDetailProvider.notifier).state = item as List<MenuItem>;
+                            ref.read(menuDetailProvider.notifier).state = item;
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -85,14 +83,14 @@ class Vendor1Page extends ConsumerWidget {
                                       borderRadius: const BorderRadius.vertical(
                                         top: Radius.circular(10),
                                       ),
-                                      child: Image.asset(
+                                      child: Image.network(
                                         item.imageUrl,
                                         height: 100,
                                         width: double.infinity,
                                         fit: BoxFit.cover,
                                       ),
                                     ),
-                                    if (!item.available)
+                                    if (!item.availability)
                                       Container(
                                         height: 100,
                                         width: double.infinity,
@@ -128,7 +126,7 @@ class Vendor1Page extends ConsumerWidget {
                                         alignment: Alignment.bottomRight,
                                         child: Icon(
                                           Icons.circle,
-                                          color: item.available
+                                          color: item.availability
                                               ? Colors.green
                                               : Colors.red,
                                           size: 12,
@@ -147,8 +145,6 @@ class Vendor1Page extends ConsumerWidget {
                 ),
               ],
             ),
-
-            // Tombol Back
             Positioned(
               top: 16,
               left: 16,
@@ -168,8 +164,6 @@ class Vendor1Page extends ConsumerWidget {
           ],
         ),
       ),
-
-      // Bottom Navigation
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         items: const [

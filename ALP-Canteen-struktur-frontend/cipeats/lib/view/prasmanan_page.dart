@@ -9,7 +9,7 @@ class PrasmananPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final menuAsync = ref.watch(menuProvider);
+    final menuAsync = ref.watch(menuServiceProvider);
 
     return Scaffold(
       appBar: AppBar(

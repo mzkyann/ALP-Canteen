@@ -6,14 +6,11 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Food;
 
-class DatabaseSeeder extends Seeder
+class FoodSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void
+    public function run()
     {
-        // Create 2 specific users
+        // Create 2 users
         $user1 = User::factory()->create([
             'name' => 'Alice Seller',
             'email' => 'alice@example.com',
@@ -24,12 +21,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'bob@example.com',
         ]);
 
-        // Create 3 food items for Alice
+        // Create 3 food items for user1
         Food::factory()->count(3)->create([
             'user_id' => $user1->id,
         ]);
 
-        // Create 2 food items for Bob
+        // Create 2 food items for user2
         Food::factory()->count(2)->create([
             'user_id' => $user2->id,
         ]);

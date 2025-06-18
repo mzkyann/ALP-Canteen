@@ -46,7 +46,7 @@ class MenuDetailPage extends ConsumerWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      item.image,
+                      item.imageUrl,
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: screenWidth * 0.5,

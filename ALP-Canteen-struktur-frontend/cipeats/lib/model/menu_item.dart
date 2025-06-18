@@ -1,4 +1,4 @@
-import 'user_model.dart';
+import 'package:cipeats/model/user_model.dart';
 
 class MenuItem {
   final int id;
@@ -6,10 +6,9 @@ class MenuItem {
   final String description;
   final double price;
   final String? estimatedTime;
-  final String image;
   final bool availability;
-  final UserModel user;
   final String imageUrl;
+  final UserModel user;
 
   MenuItem({
     required this.id,
@@ -17,23 +16,25 @@ class MenuItem {
     required this.description,
     required this.price,
     required this.estimatedTime,
-    required this.image,
     required this.availability,
-    required this.user,
     required this.imageUrl,
+    required this.user,
   });
 
-  factory MenuItem.fromJson(Map<String, dynamic> json) {
-    return MenuItem(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      price: double.tryParse(json['price'].toString()) ?? 0,
-      estimatedTime: json['estimated_time'],
-      image: 'http://127.0.0.1:8000/storage/' + json['image'], // ✅ Full URL
-      availability: json['availability'] == 1,
-      user: UserModel.fromJson(json['user']),
-      imageUrl: json['image_url'] ?? '', // Provide a default or parse as needed
-    );
-  }
+factory MenuItem.fromJson(Map<String, dynamic> json) {
+  final String fullImageUrl = 'http://127.0.0.1:8000/storage/${json['image']}';
+
+  return MenuItem(
+    id: json['id'],
+    name: json['name'],
+    description: json['description'],
+    price: double.tryParse(json['price'].toString()) ?? 0,
+    estimatedTime: json['estimated_time'],
+    availability: json['availability'] == 1,
+    user: UserModel.fromJson(json['user']),
+    imageUrl: fullImageUrl, // ✅ Correct field
+  );
+}
+
+
 }

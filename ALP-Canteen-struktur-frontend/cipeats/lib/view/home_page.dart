@@ -97,95 +97,103 @@ class HomePage extends ConsumerWidget {
           const SizedBox(height: 8),
 
           menuList.when(
-            data: (menus) => GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: menus.length,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200,
-                mainAxisExtent: 180,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              itemBuilder: (context, index) {
-                final item = menus[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/detail', arguments: item);
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    elevation: 3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(10)),
-                              child: getImage(item.imageUrl),
-                            ),
-                            Positioned(
-                              top: 4,
-                              left: 4,
-                              child: CircleAvatar(
-                                backgroundImage: AssetImage(
-                                  vendorLogos[item.user.name] ??
-                                      'assets/images/default_vendor.png',
-                                ),
-                                radius: 12,
-                              ),
-                            ),
-                            if (!item.availability)
-                              Container(
-                                height: 100,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.6),
-                                  borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(10)),
-                                ),
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  "Habis",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              )
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+            data: (menus) {
+              // ✅ Log all image URLs
+              for (final item in menus) {
+                debugPrint("✅ Image URL: ${item.imageUrl}");
+              }
+
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: menus.length,
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
+                  mainAxisExtent: 180,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemBuilder: (context, index) {
+                  final item = menus[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/detail', arguments: item);
+                    },
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      elevation: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Stack(
                             children: [
-                              Text(item.name,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
-                              Text("Rp ${item.price}",
-                                  style: const TextStyle(color: Colors.grey)),
-                              Align(
-                                alignment: Alignment.bottomRight,
-                                child: Icon(
-                                  Icons.circle,
-                                  color:
-                                      item.availability ? Colors.green : Colors.red,
-                                  size: 12,
+                              ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(10)),
+                                child: getImage(item.imageUrl),
+                              ),
+                              Positioned(
+                                top: 4,
+                                left: 4,
+                                child: CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                    vendorLogos[item.user.name] ??
+                                        'assets/images/default_vendor.png',
+                                  ),
+                                  radius: 12,
                                 ),
                               ),
+                              if (!item.availability)
+                                Container(
+                                  height: 100,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.6),
+                                    borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(10)),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: const Text(
+                                    "Habis",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )
                             ],
                           ),
-                        )
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(item.name,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold)),
+                                Text("Rp ${item.price}",
+                                    style: const TextStyle(color: Colors.grey)),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Icon(
+                                    Icons.circle,
+                                    color: item.availability
+                                        ? Colors.green
+                                        : Colors.red,
+                                    size: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              );
+            },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => Center(child: Text("Error: $e")),
           ),

@@ -8,6 +8,7 @@ class LoginPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vm = ref.watch(loginViewModelProvider);
+    final notifier = ref.read(loginViewModelProvider.notifier);
 
     return Scaffold(
       body: Container(
@@ -32,7 +33,7 @@ class LoginPage extends ConsumerWidget {
                     fillColor: Colors.white,
                     border: OutlineInputBorder(),
                   ),
-                  onChanged: ref.read(loginViewModelProvider.notifier).setEmail,
+                  onChanged: notifier.setEmail,
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -46,43 +47,56 @@ class LoginPage extends ConsumerWidget {
                       icon: Icon(
                         vm.passwordVisible ? Icons.visibility : Icons.visibility_off,
                       ),
-                      onPressed: () =>
-                          ref.read(loginViewModelProvider.notifier).togglePasswordVisibility(),
+                      onPressed: notifier.togglePasswordVisibility,
                     ),
                   ),
-                  onChanged: ref.read(loginViewModelProvider.notifier).setPassword,
+                  onChanged: notifier.setPassword,
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     Checkbox(
                       value: vm.rememberMe,
-                      onChanged: (val) =>
-                          ref.read(loginViewModelProvider.notifier).setRememberMe(val!),
+                      onChanged: (value) {
+                        notifier.setRememberMe(value ?? false);
+                      },
                     ),
                     const Text("Ingat saya"),
                   ],
                 ),
+                if (vm.errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      vm.errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   height: 45,
                   child: ElevatedButton(
                     onPressed: vm.isLoading
-                        ? null // disable button while loading
-                        : () async {
-                            await ref.read(loginViewModelProvider.notifier).login(context);
-                          },
+                        ? null
+                        : () => notifier.login(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepOrange,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
+                    child: vm.isLoading
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : const Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 16),

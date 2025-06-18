@@ -21,7 +21,7 @@ class UserModel {
   /// Creates a user from API JSON response.
 factory UserModel.fromJson(Map<String, dynamic> json) {
   return UserModel(
-    id: json['id'],
+    id: json['id'] ?? 0, // safely fallback to 0 if null
     name: json['name'] ?? '',
     email: json['email'] ?? '',
     password: '', // don't store password from server
@@ -29,6 +29,7 @@ factory UserModel.fromJson(Map<String, dynamic> json) {
     isVerified: json['email_verified_at'] != null,
   );
 }
+
 
 
   /// Returns an "empty" unauthenticated user.

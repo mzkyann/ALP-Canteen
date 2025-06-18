@@ -1,8 +1,6 @@
-// lib/view_model/login_view_model.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/login_model.dart';
-import '../model/user_model.dart';
 import '../service/auth_service_wrapper.dart';
 import '../provider/secure_storage_provider.dart';
 
@@ -36,31 +34,36 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
       state = state.copyWith(errorMessage: "Email and password cannot be empty.");
       return;
     }
+
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
+      print('🔁 Attempting login...');
       final result = await authService.login(
         email: state.email,
         password: state.password,
       );
+      print('✅ API response: $result');
 
-      if (result['success']) {
+      final success = result['success'] == true || result['status'] == true;
+
+      if (success) {
         final String token = result['token'];
 
-// after successful login
-await ref.read(secureStorageProvider).saveToken(token);
-
-
-
+        await ref.read(secureStorageProvider).saveToken(token);
         state = state.copyWith(isLoading: false);
-        Navigator.pushReplacementNamed(context, '/home');
+
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       } else {
         state = state.copyWith(
           isLoading: false,
-          errorMessage: result['message'] ?? 'Login failed',
+          errorMessage: result['message'] ?? 'Login failed.',
         );
       }
     } catch (e) {
+      print('❌ Login error: $e');
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'An error occurred. Please try again.',
@@ -69,7 +72,8 @@ await ref.read(secureStorageProvider).saveToken(token);
   }
 }
 
-final loginViewModelProvider = StateNotifierProvider<LoginViewModelNotifier, LoginViewModel>(
+final loginViewModelProvider =
+    StateNotifierProvider<LoginViewModelNotifier, LoginViewModel>(
   (ref) => LoginViewModelNotifier(
     authService: AuthServiceWrapper(),
     ref: ref,

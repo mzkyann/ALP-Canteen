@@ -36,5 +36,7 @@ factory MenuItem.fromJson(Map<String, dynamic> json) {
   );
 }
 
+  get available => null;
+
 
 }

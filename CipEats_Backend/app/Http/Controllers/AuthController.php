@@ -14,57 +14,59 @@ class AuthController extends Controller
 {
     /**
      * Register a new user
-     */
-    public function register(Request $request)
-    {
-        // Validate input
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users,email',
-            'password' => 'required|string|min:6',
-            'role' => 'sometimes|string|in:customer,seller',
+     */public function register(Request $request)
+{
+    // Validate input
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|unique:users,email',
+        'password' => 'required|string|min:6',
+        'role' => 'sometimes|string|in:customer,seller',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    try {
+        // Create user
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role ?? 'customer',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
+        // Send email verification
+        event(new Registered($user));
 
-        try {
-            // Create user
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role' => $request->role ?? 'customer',
-            ]);
+        // Generate token
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-            event(new Registered($user)); // ✅ Send email verification link
+        return response()->json([
+            'success' => true,
+            'message' => 'Registration successful. Please check your email to verify your account.',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+                'requires_verification' => true,
+            ]
+        ], 201);
 
-            // Generate token
-            $token = $user->createToken('auth_token')->plainTextToken;
+    } catch (\Exception $e) {
+        \Log::error('Registration error: ' . $e->getMessage());
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Registration successful',
-                'data' => [
-                    'user' => $user,
-                    'token' => $token,
-                    'requires_verification' => $user->role === 'seller',
-                ]
-            ], 201);
-
-        } catch (\Exception $e) {
-            Log::error('Registration error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Registration failed',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Registration failed. Please try again later.',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
 
     /**
      * Login user

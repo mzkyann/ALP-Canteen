@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PublicFoodController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -71,6 +72,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/orders/customer', [OrderController::class, 'customerOrders']); // Customer views own orders
         Route::patch('/order-items/{id}/status', [OrderController::class, 'updateOrderItemStatus']); // Seller updates status
         Route::get('/orders/status', [OrderController::class, 'getOrdersByStatus']);
+        Route::get('/{user}/foods', [PublicFoodController::class, 'foodsBySeller']);
 
         Route::get('/history/{id}', [HistoryController::class, 'customerHistory']); // Customer order history
 

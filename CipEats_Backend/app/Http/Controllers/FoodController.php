@@ -6,6 +6,7 @@ use App\Models\Food;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Models\User; 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -13,11 +14,11 @@ class FoodController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except(['show', 'publicFoods']);
+        $this->middleware('auth:sanctum')->except(['show', 'publicFoods','foodsBySeller']);
         $this->middleware(function ($request, $next) {
             $this->authorizeSeller();
             return $next($request);
-        })->except(['show', 'publicFoods']);
+        })->except(['show', 'publicFoods', 'foodsBySeller']);
 
     }
 
@@ -185,4 +186,26 @@ if ($request->hasFile('image')) {
             'food' => $food
         ]);
     }
+
+public function foodsBySeller(User $user)
+{
+    $authUser = Auth::user();
+
+    // Only allow logged-in customers
+    if (!$authUser || $authUser->role !== 'customer') {
+        abort(403, 'Only customers are allowed to view this seller\'s foods.');
+    }
+
+    $foods = Food::where('user_id', $user->id)
+                 ->where('availability', true)
+                 ->with('user')
+                 ->get();
+
+    return response()->json([
+        'seller' => $user->only(['id', 'name', 'email']),
+        'foods' => $foods,
+    ]);
+}
+
+
 }

@@ -1,28 +1,37 @@
-import 'package:flutter/material.dart';
-import '../model/user_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../repository/auth_repository.dart';
+import '../service/auth_service.dart';
 
-class RegisterViewModel extends ChangeNotifier {
-  UserModel _user = UserModel.empty();
+final registerViewModelProvider = StateNotifierProvider<RegisterViewModel, AsyncValue<String?>>((ref) {
+  final repository = AuthRepository(AuthService());
+  return RegisterViewModel(repository);
+});
 
-  UserModel get user => _user;
+class RegisterViewModel extends StateNotifier<AsyncValue<String?>> {
+  RegisterViewModel(this._repository) : super(const AsyncValue.data(null));
 
-  void setEmail(String email) {
-    _user = _user.copyWith(email: email);
-    notifyListeners();
-  }
+  final AuthRepository _repository;
 
-  void setPassword(String password) {
-    // Note: password isn't part of UserModel. You may want to store it separately
-    // Or modify UserModel to include it.
-    notifyListeners();
-  }
+  String _email = '';
+  String _password = '';
+  String _fullName = '';
 
-  void setFullName(String fullName) {
-    _user = _user.copyWith(name: fullName);
-    notifyListeners();
-  }
+  void setEmail(String value) => _email = value;
+  void setPassword(String value) => _password = value;
+  void setFullName(String value) => _fullName = value;
 
-  void submit() {
-    print(_user.toJson());
+  Future<void> submit() async {
+    state = const AsyncValue.loading();
+
+    try {
+      final result = await _repository.register(_email, _password, _fullName);
+      if (result['success'] == true) {
+        state = AsyncValue.data(result['message'] ?? 'Registration successful.');
+      } else {
+        state = AsyncValue.error(result['message'] ?? 'Registration failed.', StackTrace.current);
+      }
+    } catch (e, st) {
+      state = AsyncValue.error(e.toString(), st);
+    }
   }
 }

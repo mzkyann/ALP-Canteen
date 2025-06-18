@@ -2,18 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/register_view_model.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends ConsumerWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 1️⃣ Listen for state changes (allowed here)
+    ref.listen<AsyncValue<String?>>(
+      registerViewModelProvider,
+      (previous, next) => next.whenOrNull(
+        data: (message) {
+          if (message != null && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)),
+            );
+            Navigator.pushReplacementNamed(context, '/login');
+          }
+        },
+        error: (error, _) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error.toString()),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+      ),
+    );
 
-class _RegisterPageState extends State<RegisterPage> {
-  final registerViewModel = RegisterViewModel();
+    // 2️⃣ Watch the current loading/error/data state
+    final registerState = ref.watch(registerViewModelProvider);
+    final registerVM = ref.read(registerViewModelProvider.notifier);
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -32,8 +54,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 Image.asset('assets/images/logo.png', height: 100),
                 const SizedBox(height: 20),
 
+                // Email
                 TextField(
-                  onChanged: registerViewModel.setEmail,
+                  onChanged: registerVM.setEmail,
                   decoration: const InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
@@ -43,8 +66,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 16),
 
+                // Password
                 TextField(
-                  onChanged: registerViewModel.setPassword,
+                  onChanged: registerVM.setPassword,
                   obscureText: true,
                   decoration: const InputDecoration(
                     filled: true,
@@ -56,8 +80,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 16),
 
+                // Full Name
                 TextField(
-                  onChanged: registerViewModel.setFullName,
+                  onChanged: registerVM.setFullName,
                   decoration: const InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
@@ -67,30 +92,41 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 24),
 
+                // Register Button
                 SizedBox(
                   width: double.infinity,
                   height: 45,
                   child: ElevatedButton(
-                    onPressed: () {
-                      registerViewModel.submit();
-                      Navigator.pushReplacementNamed(context, '/login');
-                    },
+                    onPressed: registerState.isLoading
+                        ? null
+                        : () => registerVM.submit(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF5722),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: const Text("Register", style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: registerState.isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            "Register",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 12),
 
+                // Go back to Login
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacementNamed(context, '/login');
                   },
                   child: const Text(
                     "Kembali ke halaman login",
-                    style: TextStyle(color: Colors.white, decoration: TextDecoration.underline),
+                    style: TextStyle(
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
               ],
@@ -101,4 +137,3 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
-

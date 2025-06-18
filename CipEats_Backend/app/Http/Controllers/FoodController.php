@@ -11,23 +11,31 @@ use Illuminate\Support\Facades\Validator;
 
 class FoodController extends Controller
 {
-    public function __construct()
-    {
-        // Middleware for authentication
-        $this->middleware('auth:sanctum');
+public function __construct()
+{
+$this->middleware('auth:sanctum')->except(['show', 'publicFoods']);
+$this->middleware(function ($request, $next) {
+    $this->authorizeSeller();
+    return $next($request);
+})->except(['show', 'publicFoods']);
 
-        // Middleware to check if the logged-in user is a seller
-        $this->middleware(function ($request, $next) {
-            $this->authorizeSeller();
-            return $next($request);
-        });
-    }
+}
 
-    protected function authorizeSeller()
-    {
-        // Ensure the user is a seller
-        abort_unless(Auth::user()->role === 'seller', 403, 'Only sellers can access this.');
-    }
+
+protected function authorizeSeller()
+{
+    \Log::info('authorizeSeller triggered by user: ' . optional(Auth::user())->id);
+    
+    abort_unless(Auth::user()?->role === 'seller', 403, 'Only sellers can access this.');
+}
+
+
+public function publicFoods()
+{
+    // Return all foods where availability is true
+    return Food::with('user')->where('availability', true)->get();
+}
+
 
     public function index()
     {
@@ -57,16 +65,20 @@ class FoodController extends Controller
         return Food::create($data);
     }
 
-    public function show(Food $food)
-    {
-        // Ensure the food belongs to the logged-in seller
-        abort_unless($food->user_id === Auth::id(), 403);
+public function show(Food $food)
+{
+    $user = Auth::user(); // Might be null if guest
 
-        // Load related user
-        $food->load('user');
-
-        return $food;
+    if ($user && $user->role !== 'customer' && $user->id !== $food->user_id) {
+        abort(403, 'You are not allowed to view this food item.');
     }
+
+    $food->load('user');
+
+    return $food;
+}
+
+
 
     public function update(Request $request, $id)
     {

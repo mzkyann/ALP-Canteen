@@ -27,26 +27,31 @@ import 'utils/cache_helper.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inisialisasi cache
   await CacheHelper.init();
+  await initializeDateFormatting('id', null);
 
-  // Inisialisasi date formatting (UNTUK LOCALE "id")
-  await initializeDateFormatting('id', null); // Tambahkan ini
+  final token = CacheHelper.getData('auth_token');
 
-  // Inisialisasi Sentry
   await SentryFlutter.init(
     (options) {
-      options.dsn = 'https://yourPublicKey@o0.ingest.sentry.io/yourProjectId'; // Ganti DSN ini
+      options.dsn = 'https://yourPublicKey@o0.ingest.sentry.io/yourProjectId';
       options.tracesSampleRate = 1.0;
     },
     appRunner: () => runApp(
-      const ProviderScope(child: MyApp()),
+      ProviderScope(
+        child: MyApp(
+          isLoggedIn: token != null,
+        ),
+      ),
     ),
   );
 }
 
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+
+  const MyApp({required this.isLoggedIn, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +61,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
         useMaterial3: true,
       ),
-      initialRoute: '/home',
+      initialRoute: isLoggedIn ? '/home' : '/splash',
       routes: {
         '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LoginPage(),
@@ -73,7 +78,6 @@ class MyApp extends StatelessWidget {
         '/status': (context) => const StatusPage(),
         '/riwayat': (context) => const RiwayatPage(),
         '/prasmanan': (context) => const PrasmananPage(),
-
       },
     );
   }

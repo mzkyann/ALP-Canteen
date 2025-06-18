@@ -1,3 +1,4 @@
+import 'package:cipeats/utils/cache_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/login_model.dart';
@@ -40,17 +41,17 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
         password: state.password,
       );
 
-      if (result['success']) {
-        final UserModel user = result['user'];
-        final String token = result['token'];
-        final bool isVerifiedSeller = result['isVerifiedSeller'];
+if (result['success']) {
+  final UserModel user = result['user'];
+  final String token = result['token'];
 
-        // Optionally save the user/token if needed
-        print('User: ${user.fullName}, Token: $token, Verified: $isVerifiedSeller');
+  // ✅ Simpan token
+  await CacheHelper.saveData('auth_token', token);
 
-        state = state.copyWith(isLoading: false);
-        Navigator.pushReplacementNamed(context, '/');
-      } else {
+  state = state.copyWith(isLoading: false);
+  Navigator.pushReplacementNamed(context, '/home');
+}
+ else {
         state = state.copyWith(
           isLoading: false,
           errorMessage: result['message'] ?? 'Login failed',

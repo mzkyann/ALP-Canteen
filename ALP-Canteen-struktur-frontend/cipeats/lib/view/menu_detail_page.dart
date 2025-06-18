@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/menu_detail_view_model.dart';
 import '../model/menu_item.dart';
+import '../provider/menu_detail_provider.dart';
 
 class MenuDetailPage extends ConsumerWidget {
   final int index;
@@ -56,7 +57,7 @@ class MenuDetailPage extends ConsumerWidget {
                       height: screenWidth * 0.5,
                     ),
                   ),
-                  if (item.available)
+                  if (item.availability)
                     Positioned(
                       right: 10,
                       top: 10,

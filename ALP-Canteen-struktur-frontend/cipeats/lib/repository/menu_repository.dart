@@ -7,6 +7,6 @@ class MenuRepository {
   MenuRepository(this._menuService);
 
   Future<List<MenuItem>> getAvailableMenus() {
-    return _menuService.fetchAvailableFoods();
+    return _menuService.fetchAvailableFoods(vendor: '');
   }
 }

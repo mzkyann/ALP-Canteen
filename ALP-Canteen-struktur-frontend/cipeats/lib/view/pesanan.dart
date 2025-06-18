@@ -1,4 +1,3 @@
-import 'package:cipeats/view/status_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'keranjang.dart';
@@ -80,17 +79,12 @@ class _PesananPageState extends ConsumerState<PesananPage> with SingleTickerProv
           selectedIconTheme: const IconThemeData(size: 30),
           unselectedIconTheme: const IconThemeData(size: 26),
           onTap: (index) {
-            switch (index) {
-              case 0:
-                Navigator.pushReplacementNamed(context, '/home');
-                break;
-              case 1:
-                // Already here
-                break;
-              case 2:
-                Navigator.pushReplacementNamed(context, '/akun');
-                break;
+            if (index == 0) {
+              Navigator.pushReplacementNamed(context, '/home');
+            } else if (index == 2) {
+              Navigator.pushReplacementNamed(context, '/akun');
             }
+            // Jangan push ulang PesananPage karena sudah aktif
           },
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "Beranda"),
@@ -102,9 +96,9 @@ class _PesananPageState extends ConsumerState<PesananPage> with SingleTickerProv
       body: TabBarView(
         controller: _tabController,
         children: const [
-          StatusPage(),     // Belum dibuat? Bisa pakai placeholder dulu
-          KeranjangPage(),  // Sudah kamu minta sebelumnya
-          RiwayatPage(),    // Diambil dari riwayat.dart yang sudah kamu refactor
+          StatusPage(),     // Halaman status pesanan
+          KeranjangPage(),  // Menampilkan isi keranjang
+          RiwayatPage(),    // Riwayat pesanan
         ],
       ),
     );

@@ -3,7 +3,7 @@ import '../model/menu_item.dart';
 import 'menu_provider.dart'; // Assuming this gives you full menu list
 
 final vendorMenuProvider = Provider.family<List<MenuItem>, int>((ref, vendorId) {
-  final allMenu = ref.watch(menuProvider).maybeWhen(
+  final allMenu = ref.watch(menuServiceProvider).maybeWhen(
     data: (items) => items,
     orElse: () => [],
   );

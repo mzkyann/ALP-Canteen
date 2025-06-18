@@ -1,12 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../service/menu_service.dart';
 import '../model/menu_item.dart';
+import 'secure_storage_provider.dart';  // ← Make sure this path is correct
 
-// Service provider for MenuService
-final menuServiceProvider = Provider((ref) => MenuService());
+/// Inject the shared SecureStorageService into MenuService
+final menuServiceProvider = Provider<MenuService>((ref) {
+  final storage = ref.read(secureStorageProvider);
+  return MenuService(storage: storage);
+});
 
-// FutureProvider to fetch the actual menu list from API
+/// Fetch the menu list using the authenticated MenuService
 final menuProvider = FutureProvider<List<MenuItem>>((ref) async {
   final service = ref.read(menuServiceProvider);
-  return await service.fetchAvailableFoods();
+  return service.fetchAvailableFoods();
 });

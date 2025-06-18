@@ -1,28 +1,28 @@
-// import 'package:flutter/material.dart';
-// import '../model/user_model.dart';
+import 'package:flutter/material.dart';
+import '../model/user_model.dart';
 
-// class RegisterViewModel extends ChangeNotifier {
-//   UserModel _user = UserModel();
+class RegisterViewModel extends ChangeNotifier {
+  UserModel _user = UserModel.empty();
 
-//   UserModel get user => _user;
+  UserModel get user => _user;
 
-//   void setEmail(String email) {
-//     _user = _user.copyWith(email: email);
-//     notifyListeners();
-//   }
+  void setEmail(String email) {
+    _user = _user.copyWith(email: email);
+    notifyListeners();
+  }
 
-//   void setPassword(String password) {
-//     _user = _user.copyWith(password: password);
-//     notifyListeners();
-//   }
+  void setPassword(String password) {
+    // Note: password isn't part of UserModel. You may want to store it separately
+    // Or modify UserModel to include it.
+    notifyListeners();
+  }
 
-//   void setFullName(String fullName) {
-//     _user = _user.copyWith(fullName: fullName);
-//     notifyListeners();
-//   }
+  void setFullName(String fullName) {
+    _user = _user.copyWith(name: fullName);
+    notifyListeners();
+  }
 
-//   void submit() {
-//     // Contoh kirim ke backend / cetak ke konsol
-//     print(_user.toJson());
-//   }
-// }
+  void submit() {
+    print(_user.toJson());
+  }
+}

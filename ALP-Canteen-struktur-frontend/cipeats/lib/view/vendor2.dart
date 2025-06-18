@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/vendor_menu_view_model.dart';
 import '../view_model/menu_detail_view_model.dart';
+import '../provider/vendor_menu_provider.dart';
+import 'package:cipeats/provider/menu_detail_provider.dart'; // ✅ Import this
 import 'menu_detail_page.dart';
 
 class Vendor2Page extends ConsumerWidget {
@@ -10,7 +12,7 @@ class Vendor2Page extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final menuItems = ref.watch(vendorMenuProvider);
+    final menuItems = ref.watch(vendorMenuProvider(2));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -61,7 +63,7 @@ class Vendor2Page extends ConsumerWidget {
 
                         return GestureDetector(
                           onTap: () {
-                            ref.read(menuDetailProvider.notifier).state = item as List<MenuItem>;
+                            ref.read(menuDetailProvider.notifier).state = item; // ✅ Fixed
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -90,7 +92,7 @@ class Vendor2Page extends ConsumerWidget {
                                         fit: BoxFit.cover,
                                       ),
                                     ),
-                                    if (!item.available)
+                                    if (!item.availability)
                                       Container(
                                         height: 100,
                                         width: double.infinity,
@@ -117,17 +119,14 @@ class Vendor2Page extends ConsumerWidget {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(item.name,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold)),
+                                          style: const TextStyle(fontWeight: FontWeight.bold)),
                                       Text("Rp ${item.price}",
                                           style: const TextStyle(color: Colors.grey)),
                                       Align(
                                         alignment: Alignment.bottomRight,
                                         child: Icon(
                                           Icons.circle,
-                                          color: item.available
-                                              ? Colors.green
-                                              : Colors.red,
+                                          color: item.availability ? Colors.green : Colors.red,
                                           size: 12,
                                         ),
                                       ),
@@ -170,8 +169,8 @@ class Vendor2Page extends ConsumerWidget {
           BottomNavigationBarItem(icon: Icon(Icons.receipt), label: "Pesanan"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Akun"),
         ],
-        selectedItemColor: Colors.grey,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.grey[800],
+        unselectedItemColor: Colors.grey[400],
         backgroundColor: Colors.white,
         showUnselectedLabels: true,
         showSelectedLabels: true,

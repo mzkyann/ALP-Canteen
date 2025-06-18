@@ -30,7 +30,7 @@ void main() async {
   await CacheHelper.init();
   await initializeDateFormatting('id', null);
 
-  final token = CacheHelper.getData('auth_token');
+  final token = CacheHelper.getData('token');
 
   await SentryFlutter.init(
     (options) {

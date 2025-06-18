@@ -10,15 +10,19 @@ class FoodSeeder extends Seeder
 {
     public function run()
     {
-        // Create 2 users
+        // Create 2 seller users
         $user1 = User::factory()->create([
             'name' => 'Alice Seller',
             'email' => 'alice@example.com',
+            'role' => User::ROLE_SELLER,
+            'is_verified' => true, // Optional: mark as verified seller
         ]);
 
         $user2 = User::factory()->create([
             'name' => 'Bob Seller',
             'email' => 'bob@example.com',
+            'role' => User::ROLE_SELLER,
+            'is_verified' => true,
         ]);
 
         // Create 3 food items for user1

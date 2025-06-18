@@ -80,7 +80,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/verify', [SellerVerificationController::class, 'store']);
             Route::get('/verification-status', [SellerVerificationController::class, 'status']);
             Route::apiResource('foods', FoodController::class);
-            Route::put('/foods/{food}', [FoodController::class, 'update']);
+            Route::post('/foods/{food}', [FoodController::class, 'update']);
             Route::patch('/foods/{food}/availability', [FoodController::class, 'setAvailability']);
             Route::delete('/foods/{food}', [FoodController::class, 'destroy']);
             Route::get('/history/{id}', [HistoryController::class, 'sellerHistory']); // Seller order history

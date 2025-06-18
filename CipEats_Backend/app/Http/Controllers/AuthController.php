@@ -153,4 +153,21 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function user(Request $request)
+{
+    $user = $request->user();
+
+    if (!$user) {
+        return response()->json([
+            'status' => false,
+            'message' => 'User not authenticated',
+        ], 401);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $user,
+    ]);
+}
 }

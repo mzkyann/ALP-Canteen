@@ -14,7 +14,7 @@ class LoginPage extends ConsumerWidget {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFFF6A00), Color(0xFFFFB347)],
+            colors: [Color.fromARGB(255, 255, 79, 15), Color.fromARGB(255, 255, 164, 54)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -26,32 +26,68 @@ class LoginPage extends ConsumerWidget {
               children: [
                 Image.asset('assets/images/logo.png', height: 120),
                 const SizedBox(height: 32),
-                TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Email',
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: notifier.setEmail,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  obscureText: !vm.passwordVisible,
-                  decoration: InputDecoration(
-                    hintText: 'Password',
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        vm.passwordVisible ? Icons.visibility : Icons.visibility_off,
+
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 8),
                       ),
-                      onPressed: notifier.togglePasswordVisibility,
-                    ),
+                    ],
                   ),
-                  onChanged: notifier.setPassword,
+                  child: TextField(
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      hintStyle: TextStyle(color: const Color.fromARGB(255, 153, 153, 153)),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    ),
+                    onChanged: notifier.setEmail,
+                  ),
                 ),
+                const SizedBox(height: 26),
+
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                    ),
+                    obscureText: !vm.passwordVisible,
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      hintStyle: TextStyle(color: const Color.fromARGB(255, 153, 153, 153)),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          vm.passwordVisible ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: notifier.togglePasswordVisibility,
+                      ),
+                    ),
+                    onChanged: notifier.setPassword,
+                  ),
+
+                ),
+
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -64,6 +100,9 @@ class LoginPage extends ConsumerWidget {
                     const Text("Ingat saya"),
                   ],
                 ),
+                const SizedBox(height: 26),
+
+
                 if (vm.errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
@@ -73,6 +112,7 @@ class LoginPage extends ConsumerWidget {
                     ),
                   ),
                 const SizedBox(height: 12),
+
                 SizedBox(
                   width: double.infinity,
                   height: 45,
@@ -100,16 +140,10 @@ class LoginPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Text(
-                      "Lupa kata sandi?",
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: Colors.white,
-                      ),
-                    ),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, '/register');
@@ -117,7 +151,6 @@ class LoginPage extends ConsumerWidget {
                       child: const Text(
                         "Sign Up",
                         style: TextStyle(
-                          decoration: TextDecoration.underline,
                           color: Colors.white,
                         ),
                       ),

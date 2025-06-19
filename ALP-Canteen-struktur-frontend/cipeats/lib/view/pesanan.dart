@@ -84,7 +84,6 @@ class _PesananPageState extends ConsumerState<PesananPage> with SingleTickerProv
             } else if (index == 2) {
               Navigator.pushReplacementNamed(context, '/akun');
             }
-            // Jangan push ulang PesananPage karena sudah aktif
           },
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "Beranda"),
@@ -96,9 +95,9 @@ class _PesananPageState extends ConsumerState<PesananPage> with SingleTickerProv
       body: TabBarView(
         controller: _tabController,
         children: const [
-          StatusPage(),     // Halaman status pesanan
-          KeranjangPage(),  // Menampilkan isi keranjang
-          RiwayatPage(),    // Riwayat pesanan
+          StatusPage(),  
+          KeranjangPage(), 
+          RiwayatPage(),   
         ],
       ),
     );

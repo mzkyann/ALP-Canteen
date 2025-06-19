@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/register_view_model.dart';
 
+// Provider untuk toggle visibility password
+final _passwordVisibleProvider = StateProvider<bool>((ref) => false);
+
 class RegisterPage extends ConsumerWidget {
   const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 1️⃣ Listen for state changes (allowed here)
     ref.listen<AsyncValue<String?>>(
       registerViewModelProvider,
       (previous, next) => next.whenOrNull(
@@ -32,9 +34,9 @@ class RegisterPage extends ConsumerWidget {
       ),
     );
 
-    // 2️⃣ Watch the current loading/error/data state
     final registerState = ref.watch(registerViewModelProvider);
     final registerVM = ref.read(registerViewModelProvider.notifier);
+    final passwordVisible = ref.watch(_passwordVisibleProvider);
 
     return Scaffold(
       body: Container(
@@ -42,7 +44,7 @@ class RegisterPage extends ConsumerWidget {
         padding: const EdgeInsets.all(24),
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFFF6A00), Color(0xFFFFB347)],
+            colors: [Color.fromARGB(255, 255, 79, 15), Color.fromARGB(255, 255, 164, 54)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -55,51 +57,100 @@ class RegisterPage extends ConsumerWidget {
                 const SizedBox(height: 20),
 
                 // Email
-                TextField(
-                  onChanged: registerVM.setEmail,
-                  decoration: const InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: "Email",
-                    border: OutlineInputBorder(),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 26),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    onChanged: registerVM.setEmail,
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    decoration: InputDecoration(
+                      hintText: "Email",
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 16),
 
                 // Password
-                TextField(
-                  onChanged: registerVM.setPassword,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: "Password",
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.visibility_off),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 26),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    onChanged: registerVM.setPassword,
+                    obscureText: !passwordVisible,
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    decoration: InputDecoration(
+                      hintText: "Password",
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          passwordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          ref.read(_passwordVisibleProvider.notifier).state =
+                              !passwordVisible;
+                        },
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 16),
 
                 // Full Name
-                TextField(
-                  onChanged: registerVM.setFullName,
-                  decoration: const InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: "Nama Lengkap",
-                    border: OutlineInputBorder(),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 50),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    onChanged: registerVM.setFullName,
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    decoration: InputDecoration(
+                      hintText: "Nama Lengkap",
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 24),
 
                 // Register Button
                 SizedBox(
                   width: double.infinity,
                   height: 45,
                   child: ElevatedButton(
-                    onPressed: registerState.isLoading
-                        ? null
-                        : () => registerVM.submit(),
+                    onPressed: registerState.isLoading ? null : () => registerVM.submit(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF5722),
                       shape: RoundedRectangleBorder(
@@ -110,13 +161,15 @@ class RegisterPage extends ConsumerWidget {
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
                             "Register",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                   ),
                 ),
                 const SizedBox(height: 12),
 
-                // Go back to Login
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacementNamed(context, '/login');
@@ -125,7 +178,6 @@ class RegisterPage extends ConsumerWidget {
                     "Kembali ke halaman login",
                     style: TextStyle(
                       color: Colors.white,
-                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),

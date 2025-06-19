@@ -5,6 +5,8 @@ class LoginViewModel {
   final bool rememberMe;
   final bool isLoading;
   final String? errorMessage;
+  final String? emailError;
+  final String? passwordError;
 
   const LoginViewModel({
     this.email = '',
@@ -13,6 +15,8 @@ class LoginViewModel {
     this.rememberMe = false,
     this.isLoading = false,
     this.errorMessage,
+    this.emailError,
+    this.passwordError,    
   });
 
   LoginViewModel copyWith({
@@ -23,6 +27,8 @@ class LoginViewModel {
     bool? isLoading,
     String? errorMessage,
     bool resetError = false,
+    String? emailError,
+    String? passwordError,
   }) {
     return LoginViewModel(
       email: email ?? this.email,

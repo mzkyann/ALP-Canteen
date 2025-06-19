@@ -14,11 +14,21 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
   }) : super(LoginViewModel());
 
   void setEmail(String email) {
-    state = state.copyWith(email: email, errorMessage: null);
+    String? error;
+    if (!email.contains('@')) {
+      error = 'Email harus mengandung @';
+    }
+
+    state = state.copyWith(email: email, emailError: error, errorMessage: null);
   }
 
   void setPassword(String password) {
-    state = state.copyWith(password: password, errorMessage: null);
+    String? error;
+    if (password.length < 6) {
+      error = 'Password minimal 6 karakter';
+    }
+
+    state = state.copyWith(password: password, passwordError: error, errorMessage: null);
   }
 
   void togglePasswordVisibility() {
@@ -31,7 +41,12 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
 
   Future<void> login(BuildContext context) async {
     if (state.email.isEmpty || state.password.isEmpty) {
-      state = state.copyWith(errorMessage: "Email and password cannot be empty.");
+      state = state.copyWith(errorMessage: "Email dan password tidak boleh kosong.");
+      return;
+    }
+
+    if (state.emailError != null || state.passwordError != null) {
+      // Jangan lanjutkan login jika ada error validasi
       return;
     }
 
@@ -49,7 +64,6 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
 
       if (success) {
         final String token = result['token'];
-
         await ref.read(secureStorageProvider).saveToken(token);
         state = state.copyWith(isLoading: false);
 
@@ -59,14 +73,14 @@ class LoginViewModelNotifier extends StateNotifier<LoginViewModel> {
       } else {
         state = state.copyWith(
           isLoading: false,
-          errorMessage: result['message'] ?? 'Login failed.',
+          errorMessage: result['message'] ?? 'Login gagal.',
         );
       }
     } catch (e) {
       print('❌ Login error: $e');
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'An error occurred. Please try again.',
+        errorMessage: 'Terjadi kesalahan. Silakan coba lagi.',
       );
     }
   }

@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../view_model/register_view_model.dart';
 
-// Provider untuk toggle visibility password
-final _passwordVisibleProvider = StateProvider<bool>((ref) => false);
-
 class RegisterPage extends ConsumerWidget {
   const RegisterPage({super.key});
 
@@ -36,7 +33,6 @@ class RegisterPage extends ConsumerWidget {
 
     final registerState = ref.watch(registerViewModelProvider);
     final registerVM = ref.read(registerViewModelProvider.notifier);
-    final passwordVisible = ref.watch(_passwordVisibleProvider);
 
     return Scaffold(
       body: Container(
@@ -72,12 +68,19 @@ class RegisterPage extends ConsumerWidget {
                   ),
                   child: TextField(
                     onChanged: registerVM.setEmail,
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                    decoration: InputDecoration(
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    decoration: const InputDecoration(
                       hintText: "Email",
-                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      hintStyle: TextStyle(
+                        color: Color.fromARGB(255, 153, 153, 153),
+                        fontSize: 13,
+                      ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     ),
                   ),
                 ),
@@ -96,30 +99,41 @@ class RegisterPage extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  child: TextField(
-                    onChanged: registerVM.setPassword,
-                    obscureText: !passwordVisible,
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                    decoration: InputDecoration(
-                      hintText: "Password",
-                      hintStyle: TextStyle(color: Colors.grey[400]),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          passwordVisible ? Icons.visibility : Icons.visibility_off,
-                          color: Colors.grey,
+                  child: StatefulBuilder(
+                    builder: (context, setState) {
+                      bool isPasswordVisible = false;
+
+                      return TextField(
+                        onChanged: registerVM.setPassword,
+                        obscureText: !isPasswordVisible,
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
-                        onPressed: () {
-                          ref.read(_passwordVisibleProvider.notifier).state =
-                              !passwordVisible;
-                        },
-                      ),
-                    ),
+                        decoration: InputDecoration(
+                          hintText: "Password",
+                          hintStyle: const TextStyle(
+                            color: Color.fromARGB(255, 153, 153, 153),
+                            fontSize: 13,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            ),
+                            onPressed: () => setState(() {
+                              isPasswordVisible = !isPasswordVisible;
+                            }),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
 
-                // Full Name
+                // Nama Lengkap
                 Container(
                   margin: const EdgeInsets.only(bottom: 50),
                   decoration: BoxDecoration(
@@ -135,17 +149,24 @@ class RegisterPage extends ConsumerWidget {
                   ),
                   child: TextField(
                     onChanged: registerVM.setFullName,
-                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                    decoration: InputDecoration(
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    decoration: const InputDecoration(
                       hintText: "Nama Lengkap",
-                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      hintStyle: TextStyle(
+                        color: Color.fromARGB(255, 153, 153, 153),
+                        fontSize: 13,
+                      ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     ),
                   ),
                 ),
 
-                // Register Button
+                // Tombol Register
                 SizedBox(
                   width: double.infinity,
                   height: 45,
@@ -170,6 +191,7 @@ class RegisterPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
 
+                // Tombol kembali ke login
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacementNamed(context, '/login');
@@ -177,6 +199,8 @@ class RegisterPage extends ConsumerWidget {
                   child: const Text(
                     "Kembali ke halaman login",
                     style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),

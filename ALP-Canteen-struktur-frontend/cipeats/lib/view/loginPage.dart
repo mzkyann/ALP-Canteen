@@ -27,6 +27,7 @@ class LoginPage extends ConsumerWidget {
                 Image.asset('assets/images/logo.png', height: 120),
                 const SizedBox(height: 32),
 
+                // Email
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -41,19 +42,25 @@ class LoginPage extends ConsumerWidget {
                   ),
                   child: TextField(
                     style: const TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
                     ),
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Email',
-                      hintStyle: TextStyle(color: const Color.fromARGB(255, 153, 153, 153)),
+                      hintStyle: TextStyle(
+                        color: Color.fromARGB(255, 153, 153, 153),
+                        fontSize: 13,
+                      ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     ),
                     onChanged: notifier.setEmail,
                   ),
                 ),
                 const SizedBox(height: 26),
 
+                // Password
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -68,12 +75,17 @@ class LoginPage extends ConsumerWidget {
                   ),
                   child: TextField(
                     style: const TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
                     ),
                     obscureText: !vm.passwordVisible,
                     decoration: InputDecoration(
                       hintText: 'Password',
-                      hintStyle: TextStyle(color: const Color.fromARGB(255, 153, 153, 153)),
+                      hintStyle: const TextStyle(
+                        color: Color.fromARGB(255, 153, 153, 153),
+                        fontSize: 13,
+                      ),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       suffixIcon: IconButton(
@@ -85,10 +97,11 @@ class LoginPage extends ConsumerWidget {
                     ),
                     onChanged: notifier.setPassword,
                   ),
-
                 ),
 
                 const SizedBox(height: 8),
+
+                // Remember Me
                 Row(
                   children: [
                     Checkbox(
@@ -102,7 +115,7 @@ class LoginPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 26),
 
-
+                // Error Message
                 if (vm.errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
@@ -111,15 +124,15 @@ class LoginPage extends ConsumerWidget {
                       style: const TextStyle(color: Colors.red),
                     ),
                   ),
+
                 const SizedBox(height: 12),
 
+                // Tombol Login
                 SizedBox(
                   width: double.infinity,
                   height: 45,
                   child: ElevatedButton(
-                    onPressed: vm.isLoading
-                        ? null
-                        : () => notifier.login(context),
+                    onPressed: vm.isLoading ? null : () => notifier.login(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepOrange,
                       shape: RoundedRectangleBorder(
@@ -127,9 +140,7 @@ class LoginPage extends ConsumerWidget {
                       ),
                     ),
                     child: vm.isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
+                        ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
                             'Login',
                             style: TextStyle(
@@ -139,8 +150,10 @@ class LoginPage extends ConsumerWidget {
                           ),
                   ),
                 ),
+
                 const SizedBox(height: 16),
 
+                // Tombol Sign Up (align kanan)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -152,6 +165,8 @@ class LoginPage extends ConsumerWidget {
                         "Sign Up",
                         style: TextStyle(
                           color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),

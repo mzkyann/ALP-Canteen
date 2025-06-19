@@ -62,8 +62,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
         useMaterial3: true,
       ),
-      // initialRoute: isLoggedIn ? '/home' : '/splash',
-      initialRoute: '/home',
+      initialRoute: isLoggedIn ? '/home' : '/splash',
+      // initialRoute: '/home',
       routes: {
         '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LoginPage(),

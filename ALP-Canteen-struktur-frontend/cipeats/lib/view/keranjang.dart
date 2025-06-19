@@ -67,9 +67,7 @@ class KeranjangPage extends ConsumerWidget {
                     width: double.infinity,
                     child: OutlinedButton(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Pesanan diproses")),
-                        );
+                        Navigator.pushNamed(context, '/checkout');
                       },
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.black),

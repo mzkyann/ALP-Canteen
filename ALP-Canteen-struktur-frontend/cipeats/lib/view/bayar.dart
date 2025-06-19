@@ -150,10 +150,11 @@ class BayarPage extends ConsumerWidget {
                   backgroundColor: Colors.white,
                 ),
                 onPressed: state.pin.length == 4
-                    ? () async {
-                        await vm.submitPayment();
-                      }
-                    : null,
+                  ? () async {
+                      await vm.submitPayment();
+                      Navigator.pushReplacementNamed(context, '/konfirmasi');
+                  }
+                  : null,
                 child: const Text(
                   'Bayar',
                   style: TextStyle(

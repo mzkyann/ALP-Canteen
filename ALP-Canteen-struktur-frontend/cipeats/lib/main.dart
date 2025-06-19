@@ -17,6 +17,7 @@ import 'view/keranjang.dart';
 import 'view/status.dart';
 import 'view/status_page.dart';
 import 'view/history_page.dart';
+import 'view/konfirmasibayar.dart';
 import 'view/prasmanan_page.dart';
 import 'package:cipeats/view/riwayat.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -61,8 +62,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.orange,
         useMaterial3: true,
       ),
-      initialRoute: isLoggedIn ? '/home' : '/splash',
-      // initialRoute: '/splash',
+      // initialRoute: isLoggedIn ? '/home' : '/splash',
+      initialRoute: '/home',
       routes: {
         '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LoginPage(),
@@ -79,6 +80,7 @@ class MyApp extends StatelessWidget {
         '/status': (context) => const StatusPage(),
         '/riwayat': (context) => const RiwayatPage(),
         '/prasmanan': (context) => const PrasmananPage(),
+        '/konfirmasi': (context) => const KonfirmasiBayarPage(),
       },
     );
   }
